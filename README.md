@@ -52,7 +52,7 @@ Dự án này chỉ mang tính chất học tập, phát triển và bảo trì 
 ## Cài đặt phần mềm
 ### Một cài đặt chính
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/XrayR-project/XrayR-release/master/install.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/herotbty/Aiko-XrayR/install/install.sh)
 ```
 ### Triển khai phần mềm bằng Docker
 [Hướng dẫn triển khai Docker](https://crackair.gitbook.io/xrayr-project/xrayr-xia-zai-he-an-zhuang/install/docker) < Tiếng Tàu Khựa>
