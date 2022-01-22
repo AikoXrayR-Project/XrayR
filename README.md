@@ -8,7 +8,7 @@ Một khung công tác back-end dựa trên Xray, hỗ trợ các giao thức V2
 
 Nếu bạn thích dự án này, bạn có thể nhấn vào dấu sao + xem ở góc trên bên phải để theo dõi tiến độ của dự án này.
 
-Sử dụng hướng dẫn：[Hướng dẫn chi tiết](https://crackair.gitbook.io/xrayr-project/)
+Sử dụng hướng dẫn：[Hướng dẫn chi tiết](https://herotbty.gitbook.io/aikoxrayr/)
 ## Tuyên bố từ chối trách nhiệm
 
 Dự án này chỉ mang tính chất học tập, phát triển và bảo trì của cá nhân tôi, tôi không đảm bảo tính khả dụng và tôi không chịu trách nhiệm về bất kỳ hậu quả nào do sử dụng phần mềm này.
@@ -55,14 +55,14 @@ Dự án này chỉ mang tính chất học tập, phát triển và bảo trì 
 bash <(curl -Ls https://raw.githubusercontent.com/herotbty/Aiko-XrayR/install/install.sh)
 ```
 ### Triển khai phần mềm bằng Docker
-[Hướng dẫn triển khai Docker](https://crackair.gitbook.io/xrayr-project/xrayr-xia-zai-he-an-zhuang/install/docker) < Tiếng Tàu Khựa>
+[Hướng dẫn triển khai Docker](https://herotbty.gitbook.io/aikoxrayr/xrayr-xia-zai-he-an-zhuang/install/docker) < Tiếng Tàu Khựa>
 
 ### Hướng dẫn cài đặt
-[Hướng dẫn cài đặt thủ công](https://crackair.gitbook.io/xrayr-project/xrayr-xia-zai-he-an-zhuang/install/manual) < Tiếng Tàu Khựa>
+[Hướng dẫn cài đặt thủ công](https://herotbty.gitbook.io/aikoxrayr/xrayr-xia-zai-he-an-zhuang/install/manual) < Tiếng Tàu Khựa>
 
 ## Tệp cấu hình và hướng dẫn chi tiết
 
-[Hướng dẫn chi tiết](https://crackair.gitbook.io/xrayr-project/)
+[Hướng dẫn chi tiết](https://herotbty.gitbook.io/aikoxrayr/)
 
 ## Thanks
 
