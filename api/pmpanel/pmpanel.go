@@ -15,15 +15,6 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-var (
-	firstPortRe   = regexp.MustCompile(`(?m)port=(?P<outport>\d+)#?`) // First Port
-	secondPortRe  = regexp.MustCompile(`(?m)port=\d+#(\d+)`)          // Second Port
-	hostRe        = regexp.MustCompile(`(?m)host=([\w\.]+)\|?`)       // Host
-	enableXtlsRe  = regexp.MustCompile(`(?m)enable_xtls=(\w+)\|?`)    // EnableXtls
-	enableVlessRe = regexp.MustCompile(`(?m)enable_vless=(\w+)\|?`)   // EnableVless
-
-)
-
 // APIClient create a api client to the panel.
 type APIClient struct {
 	client        *resty.Client
@@ -55,7 +46,7 @@ func New(apiConfig *api.Config) *APIClient {
 			log.Print(v.Err)
 		}
 	})
-	client.SetHostURL(apiConfig.APIHost)
+	client.SetBaseURL(apiConfig.APIHost)
 	// Create Key for each requests
 	client.SetHeaders(map[string]string{
 		"key": apiConfig.Key,
@@ -97,7 +88,7 @@ func readLocalRuleList(path string) (LocalRuleList []api.DetectRule) {
 		for fileScanner.Scan() {
 			LocalRuleList = append(LocalRuleList, api.DetectRule{
 				ID:      -1,
-				Pattern: fileScanner.Text(),
+				Pattern: regexp.MustCompile(fileScanner.Text()),
 			})
 		}
 		// handle first encountered error while reading
@@ -353,7 +344,7 @@ func (c *APIClient) GetNodeRule() (*[]api.DetectRule, error) {
 	for _, r := range *ruleListResponse {
 		ruleList = append(ruleList, api.DetectRule{
 			ID:      r.ID,
-			Pattern: r.Content,
+			Pattern: regexp.MustCompile(r.Content),
 		})
 	}
 	return &ruleList, nil

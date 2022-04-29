@@ -34,17 +34,10 @@ type V2rayNodeInfo struct {
 
 type ShadowsocksNodeInfo struct {
 	ID          int    `json:"id"`
-	IsUDP       int   `json:"is_udp"`
 	SpeedLimit  uint64 `json:"speed_limit"`
 	ClientLimit int    `json:"client_limit"`
-	PushPort    int    `json:"push_port"`
 	Method      string `json:"method"`
-	Protocol    string `json:"protocol"`
-	Obfs        string `json:"obfs"`
-	Obfs_param  string `json:"obfs_param"`
-	Single      int    `json:"sinlge"`
-	Port        string    `json:"port"`
-	Passwd      string    `json:"Passwd"`
+	Port        int    `json:"port"`
 }
 
 type TrojanNodeInfo struct {
@@ -84,13 +77,12 @@ type TrojanUser struct {
 
 type SSUser struct {
 	UID        int    `json:"uid"`
-	Password   string `json:"assword"`
-	Method   string `json:"method"`
+	Password   string `json:"passwd"`
 	SpeedLimit uint64 `json:"speed_limit"`
 }
 
 type UserTraffic struct {
-	UID      int `json:"uid"`
+	UID      int   `json:"uid"`
 	Upload   int64 `json:"upload"`
 	Download int64 `json:"download"`
 }

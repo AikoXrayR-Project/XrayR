@@ -14,7 +14,7 @@ import (
 )
 
 //InboundBuilder build Inbound config for different protocol
-func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandlerConfig, error) {
+func InboundBuilder(config *Config, nodeInfo *api.NodeInfo, tag string) (*core.InboundHandlerConfig, error) {
 	inboundDetourConfig := &conf.InboundDetourConfig{}
 	// Build Listen IP address
 	if nodeInfo.NodeType == "Shadowsocks-Plugin" {
@@ -31,7 +31,7 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 	}
 	inboundDetourConfig.PortList = portList
 	// Build Tag
-	inboundDetourConfig.Tag = fmt.Sprintf("%s_%d", nodeInfo.NodeType, nodeInfo.Port)
+	inboundDetourConfig.Tag = tag
 	// SniffingConfig
 	sniffingConfig := &conf.SniffingConfig{
 		Enabled:      true,
@@ -167,12 +167,16 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 			return nil, err
 		}
 		if nodeInfo.TLSType == "tls" {
-			tlsSettings := &conf.TLSConfig{}
+			tlsSettings := &conf.TLSConfig{
+				RejectUnknownSNI: config.CertConfig.RejectUnknownSni,
+			}
 			tlsSettings.Certs = append(tlsSettings.Certs, &conf.TLSCertConfig{CertFile: certFile, KeyFile: keyFile, OcspStapling: 3600})
 
 			streamSetting.TLSSettings = tlsSettings
 		} else if nodeInfo.TLSType == "xtls" {
-			xtlsSettings := &conf.XTLSConfig{}
+			xtlsSettings := &conf.XTLSConfig{
+				RejectUnknownSNI: config.CertConfig.RejectUnknownSni,
+			}
 			xtlsSettings.Certs = append(xtlsSettings.Certs, &conf.XTLSCertConfig{CertFile: certFile, KeyFile: keyFile, OcspStapling: 3600})
 			streamSetting.XTLSSettings = xtlsSettings
 		}
@@ -241,6 +245,7 @@ func buildVlessFallbacks(fallbackConfigs []*FallBackConfig) ([]*conf.VLessInboun
 		}
 		vlessFallBacks[i] = &conf.VLessInboundFallback{
 			Name: c.SNI,
+			Alpn: c.Alpn,
 			Path: c.Path,
 			Dest: dest,
 			Xver: c.ProxyProtocolVer,
@@ -268,6 +273,7 @@ func buildTrojanFallbacks(fallbackConfigs []*FallBackConfig) ([]*conf.TrojanInbo
 		}
 		trojanFallBacks[i] = &conf.TrojanInboundFallback{
 			Name: c.SNI,
+			Alpn: c.Alpn,
 			Path: c.Path,
 			Dest: dest,
 			Xver: c.ProxyProtocolVer,

@@ -4,7 +4,6 @@ package rule
 import (
 	"fmt"
 	"reflect"
-	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -54,7 +53,7 @@ func (r *RuleManager) Detect(tag string, destination string, email string) (reje
 	if value, ok := r.InboundRule.Load(tag); ok {
 		ruleList := value.([]api.DetectRule)
 		for _, r := range ruleList {
-			if matchRule(r.Pattern, destination) {
+			if r.Pattern.Match([]byte(destination)) {
 				hitRuleID = r.ID
 				reject = true
 				break
@@ -80,13 +79,4 @@ func (r *RuleManager) Detect(tag string, destination string, email string) (reje
 		}
 	}
 	return reject
-}
-
-func matchRule(rule string, destination string) (hit bool) {
-	hit = false
-	// Check Regex
-	if regexp.MustCompile(rule).Match([]byte(destination)) {
-		return true
-	}
-	return hit
 }

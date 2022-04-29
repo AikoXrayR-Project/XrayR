@@ -55,40 +55,59 @@ func (p *Panel) loadCore(panelConfig *Config) *core.Instance {
 	coreDnsConfig := &conf.DNSConfig{}
 	if panelConfig.DnsConfigPath != "" {
 		if data, err := io.ReadFile(panelConfig.DnsConfigPath); err != nil {
-			log.Panicf("Failed to read file at: %s", panelConfig.DnsConfigPath)
+			log.Panicf("Failed to read DNS config file at: %s", panelConfig.DnsConfigPath)
 		} else {
 			if err = json.Unmarshal(data, coreDnsConfig); err != nil {
-				log.Panicf("Failed to unmarshal: %s", panelConfig.DnsConfigPath)
+				log.Panicf("Failed to unmarshal DNS config: %s", panelConfig.DnsConfigPath)
 			}
 		}
 	}
 	dnsConfig, err := coreDnsConfig.Build()
 	if err != nil {
-		log.Panicf("Failed to understand dns.json, Please check: https://xtls.github.io/config/base/dns/ for help: %s", err)
+		log.Panicf("Failed to understand DNS config, Please check: https://xtls.github.io/config/dns.html for help: %s", err)
 	}
 	// Routing config
 	coreRouterConfig := &conf.RouterConfig{}
 	if panelConfig.RouteConfigPath != "" {
 		if data, err := io.ReadFile(panelConfig.RouteConfigPath); err != nil {
-			log.Panicf("Failed to read file at: %s", panelConfig.RouteConfigPath)
+			log.Panicf("Failed to read Routing config file at: %s", panelConfig.RouteConfigPath)
 		} else {
 			if err = json.Unmarshal(data, coreRouterConfig); err != nil {
-				log.Panicf("Failed to unmarshal: %s", panelConfig.RouteConfigPath)
+				log.Panicf("Failed to unmarshal Routing config: %s", panelConfig.RouteConfigPath)
 			}
 		}
 	}
 	routeConfig, err := coreRouterConfig.Build()
 	if err != nil {
-		log.Panicf("Failed to understand dns.json, Please check: https://xtls.github.io/config/base/routing/ for help: %s", err)
+		log.Panicf("Failed to understand Routing config  Please check: https://xtls.github.io/config/routing.html for help: %s", err)
+	}
+	// Custom Inbound config
+	coreCustomInboundConfig := []conf.InboundDetourConfig{}
+	if panelConfig.InboundConfigPath != "" {
+		if data, err := io.ReadFile(panelConfig.InboundConfigPath); err != nil {
+			log.Panicf("Failed to read Custom Inbound config file at: %s", panelConfig.OutboundConfigPath)
+		} else {
+			if err = json.Unmarshal(data, &coreCustomInboundConfig); err != nil {
+				log.Panicf("Failed to unmarshal Custom Inbound config: %s", panelConfig.OutboundConfigPath)
+			}
+		}
+	}
+	inBoundConfig := []*core.InboundHandlerConfig{}
+	for _, config := range coreCustomInboundConfig {
+		oc, err := config.Build()
+		if err != nil {
+			log.Panicf("Failed to understand Inbound config, Please check: https://xtls.github.io/config/inbound.html for help: %s", err)
+		}
+		inBoundConfig = append(inBoundConfig, oc)
 	}
 	// Custom Outbound config
 	coreCustomOutboundConfig := []conf.OutboundDetourConfig{}
 	if panelConfig.OutboundConfigPath != "" {
 		if data, err := io.ReadFile(panelConfig.OutboundConfigPath); err != nil {
-			log.Panicf("Failed to read file at: %s", panelConfig.OutboundConfigPath)
+			log.Panicf("Failed to read Custom Outbound config file at: %s", panelConfig.OutboundConfigPath)
 		} else {
 			if err = json.Unmarshal(data, &coreCustomOutboundConfig); err != nil {
-				log.Panicf("Failed to unmarshal: %s", panelConfig.OutboundConfigPath)
+				log.Panicf("Failed to unmarshal Custom Outbound config: %s", panelConfig.OutboundConfigPath)
 			}
 		}
 	}
@@ -96,7 +115,7 @@ func (p *Panel) loadCore(panelConfig *Config) *core.Instance {
 	for _, config := range coreCustomOutboundConfig {
 		oc, err := config.Build()
 		if err != nil {
-			log.Panicf("Failed to understand dns.json, Please check: https://xtls.github.io/config/base/outbounds/ for help: %s", err)
+			log.Panicf("Failed to understand Outbound config, Please check: https://xtls.github.io/config/outbound.html for help: %s", err)
 		}
 		outBoundConfig = append(outBoundConfig, oc)
 	}
@@ -117,6 +136,7 @@ func (p *Panel) loadCore(panelConfig *Config) *core.Instance {
 			serial.ToTypedMessage(dnsConfig),
 			serial.ToTypedMessage(routeConfig),
 		},
+		Inbound:  inBoundConfig,
 		Outbound: outBoundConfig,
 	}
 	server, err := core.New(config)
@@ -155,7 +175,7 @@ func (p *Panel) Start() {
 			log.Panicf("Unsupport panel type: %s", nodeConfig.PanelType)
 		}
 		var controllerService service.Service
-		// Regist controller service
+		// Register controller service
 		controllerConfig := getDefaultControllerConfig()
 		if nodeConfig.ControllerConfig != nil {
 			if err := mergo.Merge(controllerConfig, nodeConfig.ControllerConfig, mergo.WithOverride); err != nil {

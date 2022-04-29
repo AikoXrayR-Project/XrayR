@@ -1,5 +1,4 @@
-# XrayR
-[![](https://img.shields.io/badge/ZaloChat-@AikoCuteZalo-blue.svg)](https://zalo.me/g/tkhoxp474)
+[![](https://img.shields.io/badge/ZaloChat-@AikoCuteZalo-blue.svg)](https://zalo.me/0368629364)
 [![](https://img.shields.io/badge/TeleChat-@AikocuteTele-blue.svg)](https://t.me/aikocutehotme)
 
 Một khung phụ trợ Xray có thể dễ dàng hỗ trợ nhiều bảng.
@@ -14,7 +13,7 @@ Sử dụng hướng dẫn：[Hướng dẫn chi tiết](https://xrayr.aikocute.
 Dự án này chỉ mang tính chất học tập, phát triển và bảo trì của cá nhân tôi, tôi không đảm bảo tính khả dụng và tôi không chịu trách nhiệm về bất kỳ hậu quả nào do sử dụng phần mềm này.
 
 ## Đặc trưng
-* Mã nguồn mở vĩnh viễn và miễn phí.
+* Mã nguồn mở vĩnh viễn và miễn phí. < Bản china > Bản này tuỳ Tâm trạng vui buồn
 * Hỗ trợ nhiều giao thức V2ray, Trojan, Shadowsocks.
 * Hỗ trợ các tính năng mới như Vless và XTLS.
 * Hỗ trợ kết nối đơn lẻ với nhiều bảng và nút mà không cần khởi động lại.
@@ -50,40 +49,18 @@ Dự án này chỉ mang tính chất học tập, phát triển và bảo trì 
 | [ProxyPanel](https://github.com/ProxyPanel/ProxyPanel) | √     | √      | ×                                           |
 
 ## Cài đặt phần mềm
+```
+Chưa hỗ trợ nhé - ( AikoCute Hột Me)
+```
 ### Một cài đặt chính
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/herotbty/Aiko-XrayR/install/install.sh)
+đang update new
 ```
-### Triển khai phần mềm bằng Docker
-[Hướng dẫn triển khai Docker](https://herotbty.gitbook.io/aikoxrayr/xrayr-xia-zai-he-an-zhuang/install/docker) < Tiếng Tàu Khựa>
-
-### Hướng dẫn cài đặt
-[Hướng dẫn cài đặt thủ công](https://herotbty.gitbook.io/aikoxrayr/xrayr-xia-zai-he-an-zhuang/install/manual) < Tiếng Tàu Khựa>
-
-## Tệp cấu hình và hướng dẫn chi tiết
-
-[Hướng dẫn chi tiết](https://herotbty.gitbook.io/aikoxrayr/)
-
-## Thanks
-
-* [Project X](https://github.com/XTLS/)
-* [V2Fly](https://github.com/v2fly)
-* [VNet-V2ray](https://github.com/ProxyPanel/VNet-V2ray)
-* [Air-Universe](https://github.com/crossfw/Air-Universe)
-
-## Licence
-
-[Mozilla Public License Version 2.0](https://github.com/XrayR-project/XrayR/blob/main/LICENSE)
-
+### Tệp cấu hình và hướng dẫn chi tiết
+[Hướng dẫn chi tiết](https://xrayr.aikocute.com)
 ## Telgram
 
 [AikoTelegram](https://t.me/aikocutehotme)
-## Donation
-ETH&(USDT-ERC20): 0xDbB76DDDaAef7F14e56Be96CF5cd477BBDA6FFd6
-
-TRX&(USDT-TRC20): THnoBdGW8W8tkCgATAbfTtEWV7jH3dz1dZ
-
 ## Stargazers over time
 
-[![Stargazers over time](https://starchart.cc/XrayR-project/XrayR.svg)](https://starchart.cc/XrayR-project/XrayR)
-
+[![Stargazers over time](https://starchart.cc/AikoCute/XrayR.svg)](https://starchart.cc/AikoCute/XrayR)

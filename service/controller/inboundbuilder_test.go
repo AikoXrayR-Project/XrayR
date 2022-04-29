@@ -15,14 +15,14 @@ func TestBuildV2ray(t *testing.T) {
 		SpeedLimit:        0,
 		AlterID:           2,
 		TransportProtocol: "ws",
-		Host:              "test.test.tk",
+		Host:              "test.aikocute.tk",
 		Path:              "v2ray",
 		EnableTLS:         false,
 		TLSType:           "tls",
 	}
 	certConfig := &CertConfig{
 		CertMode:   "http",
-		CertDomain: "test.test.tk",
+		CertDomain: "test.aikocute.tk",
 		Provider:   "alidns",
 		Email:      "test@gmail.com",
 	}
@@ -43,7 +43,7 @@ func TestBuildTrojan(t *testing.T) {
 		SpeedLimit:        0,
 		AlterID:           2,
 		TransportProtocol: "tcp",
-		Host:              "trojan.test.tk",
+		Host:              "trojan.aikocute.tk",
 		Path:              "v2ray",
 		EnableTLS:         false,
 		TLSType:           "tls",
@@ -53,9 +53,9 @@ func TestBuildTrojan(t *testing.T) {
 	DNSEnv["ALICLOUD_SECRET_KEY"] = "bbb"
 	certConfig := &CertConfig{
 		CertMode:   "dns",
-		CertDomain: "trojan.test.tk",
-		Provider:   "alidns",
-		Email:      "test@gmail.com",
+		CertDomain: "trojan.aikocute.tk",
+		Provider:   "cloudflare",
+		Email:      "aiko@aikocute.com",
 		DNSEnv:     DNSEnv,
 	}
 	config := &Config{
@@ -75,7 +75,7 @@ func TestBuildSS(t *testing.T) {
 		SpeedLimit:        0,
 		AlterID:           2,
 		TransportProtocol: "tcp",
-		Host:              "test.test.tk",
+		Host:              "test.aikocute.tk",
 		Path:              "v2ray",
 		EnableTLS:         false,
 		TLSType:           "tls",
@@ -85,7 +85,7 @@ func TestBuildSS(t *testing.T) {
 	DNSEnv["ALICLOUD_SECRET_KEY"] = "bbb"
 	certConfig := &CertConfig{
 		CertMode:   "dns",
-		CertDomain: "trojan.test.tk",
+		CertDomain: "trojan.aikocute.tk",
 		Provider:   "alidns",
 		Email:      "test@me.com",
 		DNSEnv:     DNSEnv,

@@ -11,10 +11,10 @@ import (
 )
 
 //OutboundBuilder build freedom outbund config for addoutbound
-func OutboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.OutboundHandlerConfig, error) {
+func OutboundBuilder(config *Config, nodeInfo *api.NodeInfo, tag string) (*core.OutboundHandlerConfig, error) {
 	outboundDetourConfig := &conf.OutboundDetourConfig{}
 	outboundDetourConfig.Protocol = "freedom"
-	outboundDetourConfig.Tag = fmt.Sprintf("%s_%d", nodeInfo.NodeType, nodeInfo.Port)
+	outboundDetourConfig.Tag = tag
 
 	// Build Send IP address
 	if config.SendIP != "" {

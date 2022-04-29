@@ -14,7 +14,14 @@ import (
 func GetSystemInfo() (Cpu float64, Mem float64, Disk float64, Uptime int, err error) {
 
 	upTime := time.Now()
-	cpuUsage, err := cpu.Percent(0, false)
+	cpuPercent, err := cpu.Percent(0, false)
+	// Check if cpuPercent is empty
+	if len(cpuPercent) > 0 {
+		Cpu = cpuPercent[0]
+	} else {
+		Cpu = 0
+	}
+
 	if err != nil {
 		return 0, 0, 0, 0, fmt.Errorf("get cpu usage failed: %s", err)
 	}
@@ -30,5 +37,5 @@ func GetSystemInfo() (Cpu float64, Mem float64, Disk float64, Uptime int, err er
 	}
 
 	Uptime = int(time.Since(upTime).Seconds())
-	return cpuUsage[0], memUsage.UsedPercent, diskUsage.UsedPercent, Uptime, nil
+	return Cpu, memUsage.UsedPercent, diskUsage.UsedPercent, Uptime, nil
 }

@@ -8,8 +8,9 @@ import (
 type Config struct {
 	LogConfig          *LogConfig       `mapstructure:"Log"`
 	DnsConfigPath      string           `mapstructure:"DnsConfigPath"`
+	InboundConfigPath  string           `mapstructure:"InboundConfigPath"`
 	OutboundConfigPath string           `mapstructure:"OutboundConfigPath"`
-	RouteConfigPath  string           `mapstructure:"RouteConfigPath"`
+	RouteConfigPath    string           `mapstructure:"RouteConfigPath"`
 	ConnetionConfig    *ConnetionConfig `mapstructure:"ConnetionConfig"`
 	NodesConfig        []*NodesConfig   `mapstructure:"Nodes"`
 }
