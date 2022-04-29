@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/XrayR-project/XrayR/api"
+	"github.com/AikoCute/XrayR/api"
 	"github.com/bitly/go-simplejson"
 	"github.com/go-resty/resty/v2"
 )

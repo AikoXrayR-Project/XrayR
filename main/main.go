@@ -12,7 +12,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/XrayR-project/XrayR/panel"
+	"github.com/AikoCute/XrayR/panel"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 )
