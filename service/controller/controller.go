@@ -3,12 +3,13 @@ package controller
 import (
 	"fmt"
 	"log"
+	"math"
 	"reflect"
 	"time"
 
-	"github.com/AikoCute/XrayR/api"
-	"github.com/AikoCute/XrayR/common/legocmd"
-	"github.com/AikoCute/XrayR/common/serverstatus"
+	"github.com/Misaka-blog/XrayR/api"
+	"github.com/Misaka-blog/XrayR/common/legocmd"
+	"github.com/Misaka-blog/XrayR/common/serverstatus"
 	"github.com/xtls/xray-core/common/protocol"
 	"github.com/xtls/xray-core/common/task"
 	"github.com/xtls/xray-core/core"
@@ -24,14 +25,16 @@ type Controller struct {
 	userList                *[]api.UserInfo
 	nodeInfoMonitorPeriodic *task.Periodic
 	userReportPeriodic      *task.Periodic
+	panelType               string
 }
 
 // New return a Controller service with default parameters.
-func New(server *core.Instance, api api.API, config *Config) *Controller {
+func New(server *core.Instance, api api.API, config *Config, panelType string) *Controller {
 	controller := &Controller{
 		server:    server,
 		config:    config,
 		apiClient: api,
+		panelType: panelType,
 	}
 	return controller
 }
@@ -57,12 +60,14 @@ func (c *Controller) Start() error {
 	if err != nil {
 		return err
 	}
+
 	err = c.addNewUser(userInfo, newNodeInfo)
 	if err != nil {
 		return err
 	}
-
+	//sync controller userList
 	c.userList = userInfo
+
 	// Add Limiter
 	if err := c.AddInboundLimiter(c.Tag, newNodeInfo.SpeedLimit, userInfo); err != nil {
 		log.Print(err)
@@ -86,9 +91,18 @@ func (c *Controller) Start() error {
 		Execute:  c.userInfoMonitor,
 	}
 	log.Printf("[%s: %d] Start monitor node status", c.nodeInfo.NodeType, c.nodeInfo.NodeID)
-	_ = c.nodeInfoMonitorPeriodic.Start()
+	// delay to start nodeInfoMonitor
+	go func() {
+		time.Sleep(time.Duration(c.config.UpdatePeriodic) * time.Second)
+		_ = c.nodeInfoMonitorPeriodic.Start()
+	}()
+
 	log.Printf("[%s: %d] Start report node status", c.nodeInfo.NodeType, c.nodeInfo.NodeID)
-	_ = c.userReportPeriodic.Start()
+	// delay to start userReport
+	go func() {
+		time.Sleep(time.Duration(c.config.UpdatePeriodic) * time.Second)
+		_ = c.userReportPeriodic.Start()
+	}()
 	return nil
 }
 
@@ -319,7 +333,19 @@ func (c *Controller) addNewUser(userInfo *[]api.UserInfo, nodeInfo *api.NodeInfo
 		if nodeInfo.EnableVless {
 			users = c.buildVlessUser(userInfo)
 		} else {
-			users = c.buildVmessUser(userInfo, nodeInfo.AlterID)
+			alterID := 0
+			if c.panelType == "V2board" {
+				// use latest userInfo
+				alterID = (*userInfo)[0].AlterID
+			} else {
+				alterID = nodeInfo.AlterID
+			}
+			if alterID >= 0 && alterID < math.MaxUint16 {
+				users = c.buildVmessUser(userInfo, uint16(alterID))
+			} else {
+				users = c.buildVmessUser(userInfo, 0)
+				return fmt.Errorf("AlterID should between 0 to 1<<16 - 1, set it to 0 for now")
+			}
 		}
 	} else if nodeInfo.NodeType == "Trojan" {
 		users = c.buildTrojanUser(userInfo)

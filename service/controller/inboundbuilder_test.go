@@ -3,8 +3,8 @@ package controller_test
 import (
 	"testing"
 
-	"github.com/AikoCute/XrayR/api"
-	. "github.com/AikoCute/XrayR/service/controller"
+	"github.com/Misaka-blog/XrayR/api"
+	. "github.com/Misaka-blog/XrayR/service/controller"
 )
 
 func TestBuildV2ray(t *testing.T) {
@@ -15,14 +15,14 @@ func TestBuildV2ray(t *testing.T) {
 		SpeedLimit:        0,
 		AlterID:           2,
 		TransportProtocol: "ws",
-		Host:              "test.aikocute.tk",
+		Host:              "test.aikocute.com",
 		Path:              "v2ray",
 		EnableTLS:         false,
 		TLSType:           "tls",
 	}
 	certConfig := &CertConfig{
 		CertMode:   "http",
-		CertDomain: "test.aikocute.tk",
+		CertDomain: "test.aikocute.com",
 		Provider:   "alidns",
 		Email:      "test@gmail.com",
 	}
@@ -43,7 +43,7 @@ func TestBuildTrojan(t *testing.T) {
 		SpeedLimit:        0,
 		AlterID:           2,
 		TransportProtocol: "tcp",
-		Host:              "trojan.aikocute.tk",
+		Host:              "test.aikocute.com",
 		Path:              "v2ray",
 		EnableTLS:         false,
 		TLSType:           "tls",
@@ -53,9 +53,9 @@ func TestBuildTrojan(t *testing.T) {
 	DNSEnv["ALICLOUD_SECRET_KEY"] = "bbb"
 	certConfig := &CertConfig{
 		CertMode:   "dns",
-		CertDomain: "trojan.aikocute.tk",
-		Provider:   "cloudflare",
-		Email:      "aiko@aikocute.com",
+		CertDomain: "trojan.aikocute.com",
+		Provider:   "alidns",
+		Email:      "test@gmail.com",
 		DNSEnv:     DNSEnv,
 	}
 	config := &Config{
@@ -75,7 +75,7 @@ func TestBuildSS(t *testing.T) {
 		SpeedLimit:        0,
 		AlterID:           2,
 		TransportProtocol: "tcp",
-		Host:              "test.aikocute.tk",
+		Host:              "test.aikocute.com",
 		Path:              "v2ray",
 		EnableTLS:         false,
 		TLSType:           "tls",
@@ -85,7 +85,7 @@ func TestBuildSS(t *testing.T) {
 	DNSEnv["ALICLOUD_SECRET_KEY"] = "bbb"
 	certConfig := &CertConfig{
 		CertMode:   "dns",
-		CertDomain: "trojan.aikocute.tk",
+		CertDomain: "trojan.aikocute.com",
 		Provider:   "alidns",
 		Email:      "test@me.com",
 		DNSEnv:     DNSEnv,

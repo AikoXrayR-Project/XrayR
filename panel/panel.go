@@ -2,19 +2,19 @@ package panel
 
 import (
 	"encoding/json"
+	"github.com/Misaka-blog/XrayR/app/mydispatcher"
 	io "io/ioutil"
 	"log"
 	"sync"
 
-	"github.com/AikoCute/XrayR/api"
-	"github.com/AikoCute/XrayR/api/pmpanel"
-	"github.com/AikoCute/XrayR/api/proxypanel"
-	"github.com/AikoCute/XrayR/api/sspanel"
-	"github.com/AikoCute/XrayR/api/v2board"
-	"github.com/AikoCute/XrayR/app/mydispatcher"
-	_ "github.com/AikoCute/XrayR/main/distro/all"
-	"github.com/AikoCute/XrayR/service"
-	"github.com/AikoCute/XrayR/service/controller"
+	"github.com/Misaka-blog/XrayR/api"
+	"github.com/Misaka-blog/XrayR/api/pmpanel"
+	"github.com/Misaka-blog/XrayR/api/proxypanel"
+	"github.com/Misaka-blog/XrayR/api/sspanel"
+	"github.com/Misaka-blog/XrayR/api/v2board"
+	_ "github.com/Misaka-blog/XrayR/main/distro/all"
+	"github.com/Misaka-blog/XrayR/service"
+	"github.com/Misaka-blog/XrayR/service/controller"
 	"github.com/imdario/mergo"
 	"github.com/r3labs/diff/v2"
 	"github.com/xtls/xray-core/app/proxyman"
@@ -182,7 +182,7 @@ func (p *Panel) Start() {
 				log.Panicf("Read Controller Config Failed")
 			}
 		}
-		controllerService = controller.New(server, apiClient, controllerConfig)
+		controllerService = controller.New(server, apiClient, controllerConfig, nodeConfig.PanelType)
 		p.Service = append(p.Service, controllerService)
 
 	}

@@ -1,22 +1,6 @@
 name: Build and Release
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - master
-    paths:
-      - "**/*.go"
-      - "go.mod"
-      - "go.sum"
-      - ".github/workflows/*.yml"
-  pull_request:
-    types: [opened, synchronize, reopened]
-    paths:
-      - "**/*.go"
-      - "go.mod"
-      - "go.sum"
-      - ".github/workflows/*.yml"
   release:
     types: [published]
 
@@ -113,7 +97,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: ^1.17.2
+          go-version: ^1.18
 
       - name: Get project dependencies
         run: go mod download
@@ -141,6 +125,7 @@ jobs:
           cp ${GITHUB_WORKSPACE}/main/dns.json ./build_assets/dns.json
           cp ${GITHUB_WORKSPACE}/main/route.json ./build_assets/route.json
           cp ${GITHUB_WORKSPACE}/main/custom_outbound.json ./build_assets/custom_outbound.json
+          cp ${GITHUB_WORKSPACE}/main/custom_inbound.json ./build_assets/custom_inbound.json
           cp ${GITHUB_WORKSPACE}/main/rulelist ./build_assets/rulelist
           cp ${GITHUB_WORKSPACE}/main/config.yml.example ./build_assets/config.yml
           LIST=('geoip geoip geoip' 'domain-list-community dlc geosite')
@@ -171,12 +156,6 @@ jobs:
       - name: Change the name
         run: |
           mv build_assets XrayR-$ASSET_NAME
-      - name: Upload files to Artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: XrayR-${{ steps.get_filename.outputs.ASSET_NAME }}
-          path: |
-            ./XrayR-${{ steps.get_filename.outputs.ASSET_NAME }}/*
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         if: github.event_name == 'release'

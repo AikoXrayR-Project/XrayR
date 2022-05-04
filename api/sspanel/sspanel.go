@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AikoCute/XrayR/api"
+	"github.com/Misaka-blog/XrayR/api"
 	"github.com/go-resty/resty/v2"
 )
 
@@ -183,7 +183,7 @@ func (c *APIClient) GetNodeInfo() (nodeInfo *api.NodeInfo, err error) {
 		nodeInfo, err = c.ParseSSPanelNodeInfo(nodeInfoResponse)
 		if err != nil {
 			res, _ := json.Marshal(nodeInfoResponse)
-			return nil, fmt.Errorf("Parse node info failed: %s, \nError: %s, \nPlease check the doc of custom_config for help: https://crackair.gitbook.io/AikoCute/dui-jie-sspanel/sspanel/sspanel_custom_config", string(res), err)
+			return nil, fmt.Errorf("Parse node info failed: %s, \nError: %s, \nPlease check the doc of custom_config for help: https://crackair.gitbook.io/Misaka-blog/dui-jie-sspanel/sspanel/sspanel_custom_config", string(res), err)
 		}
 	} else {
 		switch c.NodeType {

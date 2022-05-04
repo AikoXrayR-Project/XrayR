@@ -12,7 +12,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/AikoCute/XrayR/panel"
+	"github.com/Misaka-blog/XrayR/panel"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 )
@@ -23,9 +23,9 @@ var (
 )
 
 var (
-	version  = "1.1.0"
-	codename = "AikoXrayR"
-	intro    = "XrayR By AikoCuteHotMe"
+	version  = "1.1.2"
+	codename = "Aiko XrayR"
+	intro    = "Backend XrayR For Aiko"
 )
 
 func showVersion() {

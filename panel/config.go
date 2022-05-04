@@ -1,8 +1,8 @@
 package panel
 
 import (
-	"github.com/AikoCute/XrayR/api"
-	"github.com/AikoCute/XrayR/service/controller"
+	"github.com/Misaka-blog/XrayR/api"
+	"github.com/Misaka-blog/XrayR/service/controller"
 )
 
 type Config struct {
