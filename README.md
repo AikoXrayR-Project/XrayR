@@ -61,6 +61,4 @@ Chưa hỗ trợ nhé - ( AikoCute Hột Me)
 ## Telgram
 
 [AikoTelegram](https://t.me/aikocutehotme)
-## Stargazers over time
 
-[![Stargazers over time](https://starchart.cc/AikoCute/XrayR.svg)](https://starchart.cc/AikoCute/XrayR)
