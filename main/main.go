@@ -23,7 +23,7 @@ var (
 )
 
 var (
-	version  = "1.1.5"
+	version  = "1.1.6"
 	codename = "Aiko XrayR"
 	intro    = "Backend XrayR For Aiko"
 )
