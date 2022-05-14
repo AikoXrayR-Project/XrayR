@@ -1,7 +1,6 @@
 {
     "domainStrategy": "IPOnDemand",
-    "rules": [
-        {
+    "rules": [{
             "type": "field",
             "outboundTag": "block",
             "ip": [
@@ -18,7 +17,7 @@
         {
             "type": "field",
             "outboundTag": "socks5-warp",
-            "domain": []
+            "domain": [""]
         },
         {
             "type": "field",
