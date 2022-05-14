@@ -1,5 +1,4 @@
-[
-    {
+[{
         "tag": "IPv4_out",
         "protocol": "freedom",
         "settings": {}
@@ -17,7 +16,7 @@
         "settings": {
             "servers": [{
                 "address": "127.0.0.1",
-                "port": 1080
+                "port": 40000
             }]
         }
     },
