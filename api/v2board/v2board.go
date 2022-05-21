@@ -16,48 +16,6 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-
-// device limit user v2board
-func (c *APIClient) deviceLimit(userTraffic *[]api.UserTraffic) (err error) {
-	// get user traffic
-	var wg sync.WaitGroup
-	for _, user := range *userTraffic {
-		wg.Add(1)
-		go func(user api.UserTraffic) {
-			defer wg.Done()
-			// get user traffic
-			userTraffic, err := c.GetUserTraffic(user.UID)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			// get user limit
-			userLimit, err := c.GetUserLimit(user.UID)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			// compare user traffic and user limit
-			if userTraffic.Upload > userLimit.Upload || userTraffic.Download > userLimit.Download {
-				log.Printf("user %d traffic limit exceed, userTraffic: %+v, userLimit: %+v\n", user.UID, userTraffic, userLimit)
-				// block user
-				if err := c.BlockUser(user.UID); err != nil {
-					log.Println(err)
-					return
-				}
-				// send message to user
-				if err := c.SendMessage(user.UID, "Traffic Limit Exceed"); err != nil {
-					log.Println(err)
-					return
-				}
-			}
-		}(user)
-	}
-	wg.Wait()
-	return
-}
-
-
 // APIClient create an api client to the panel.
 type APIClient struct {
 	client        *resty.Client
