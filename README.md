@@ -9,13 +9,13 @@ XrayR AikoCute Projects
 [![](https://img.shields.io/badge/telegram-channel-blue?style=flat-square)](https://t.me/AikoCute_Support)
 [![](https://img.shields.io/github/downloads/AikoCute/XrayR/total.svg?style=flat-square)](https://github.com/AikoCute/XrayR/releases)
 [![](https://img.shields.io/github/v/release/AikoCute/XrayR?style=flat-square)](https://github.com/AikoCute/XrayR/releases)
+[![](https://img.shields.io/badge/ZaloChat-@AikoCuteZalo-blue.svg)](https://zalo.me/0368629364)
+[![](https://img.shields.io/badge/TeleChat-@AikocuteTele-blue.svg)](https://t.me/aikocutehotme)
 </div>
 
 
-[![](https://img.shields.io/badge/ZaloChat-@AikoCuteZalo-blue.svg)](https://zalo.me/0368629364)
-[![](https://img.shields.io/badge/TeleChat-@AikocuteTele-blue.svg)](https://t.me/aikocutehotme)
-
-Một khung phụ trợ Xray có thể dễ dàng hỗ trợ nhiều bảng.
+# mô tả 
+XrayR Aiko Hỗ trợ Nhiều Panel khác nhau ( V2board , ProxyPanel, sspanel, Pmpanel ...)
 
 Một khung công tác back-end dựa trên Xray, hỗ trợ các giao thức V2ay, Trojan, Shadowsocks, cực kỳ dễ dàng mở rộng và hỗ trợ kết nối nhiều bảng điều khiển。
 
@@ -27,7 +27,7 @@ Sử dụng hướng dẫn：[Hướng dẫn chi tiết](https://xrayr.aikocute.
 Dự án này chỉ mang tính chất học tập, phát triển và bảo trì của cá nhân tôi, tôi không đảm bảo tính khả dụng và tôi không chịu trách nhiệm về bất kỳ hậu quả nào do sử dụng phần mềm này.
 
 ## Đặc trưng
-* Mã nguồn mở vĩnh viễn và miễn phí. < Bản china > Bản này tuỳ Tâm trạng vui buồn
+* Mã nguồn mở `Bản này tuỳ Tâm trạng vui buồn`
 * Hỗ trợ nhiều giao thức V2ray, Trojan, Shadowsocks.
 * Hỗ trợ các tính năng mới như Vless và XTLS.
 * Hỗ trợ kết nối đơn lẻ với nhiều bảng và nút mà không cần khởi động lại.
@@ -36,6 +36,7 @@ Dự án này chỉ mang tính chất học tập, phát triển và bảo trì 
 * Cấu hình đơn giản và rõ ràng.
 * Sửa đổi cấu hình để tự động khởi động lại phiên bản.
 * Dễ dàng biên dịch và nâng cấp, có thể nhanh chóng cập nhật phiên bản lõi, hỗ trợ các tính năng mới của Xray-core.
+* Hỗ trợ UDP và nhiều chức năng khác
 
 ## Đặc trưng
 
@@ -64,11 +65,11 @@ Dự án này chỉ mang tính chất học tập, phát triển và bảo trì 
 
 ## Cài đặt phần mềm
 ```
-Chưa hỗ trợ nhé - ( AikoCute Hột Me)
+Lười đăng lên GIT tự mà tạo API đi
 ```
 ### Một cài đặt chính
 ```
-đang update new
+Như cái phần cài đặt phần mềm
 ```
 ### Tệp cấu hình và hướng dẫn chi tiết
 [Hướng dẫn chi tiết](https://xrayr.aikocute.com)
