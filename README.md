@@ -14,7 +14,7 @@ XrayR AikoCute Projects
 </div>
 
 
-# mô tả 
+# Mô tả về AikoXrayR
 XrayR Aiko Hỗ trợ Nhiều Panel khác nhau ( V2board , ProxyPanel, sspanel, Pmpanel ...)
 
 Một khung công tác back-end dựa trên Xray, hỗ trợ các giao thức V2ay, Trojan, Shadowsocks, cực kỳ dễ dàng mở rộng và hỗ trợ kết nối nhiều bảng điều khiển。
