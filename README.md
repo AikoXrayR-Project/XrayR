@@ -2,8 +2,8 @@
 
 <div align="center">
 
-# Netch
-A simple proxy client
+# AikoXrayR
+XrayR AikoCute Projects
 
 [![](https://img.shields.io/badge/telegram-group-green?style=flat-square)](https://t.me/aikocutehotme)
 [![](https://img.shields.io/badge/telegram-channel-blue?style=flat-square)](https://t.me/AikoCute_Support)
