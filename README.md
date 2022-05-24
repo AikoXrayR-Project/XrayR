@@ -9,8 +9,8 @@ XrayR AikoCute Projects
 [![](https://img.shields.io/badge/telegram-channel-blue?style=flat-square)](https://t.me/AikoCute_Support)
 [![](https://img.shields.io/github/downloads/AikoCute/XrayR/total.svg?style=flat-square)](https://github.com/AikoCute/XrayR/releases)
 [![](https://img.shields.io/github/v/release/AikoCute/XrayR?style=flat-square)](https://github.com/AikoCute/XrayR/releases)
-[![](https://img.shields.io/badge/ZaloChat-@AikoCuteZalo-blue.svg)](https://zalo.me/0368629364)
-[![](https://img.shields.io/badge/TeleChat-@AikocuteTele-blue.svg)](https://t.me/aikocutehotme)
+[![docker](https://img.shields.io/docker/v/aikocute/xrayr?label=Docker%20image&sort=semver)](https://hub.docker.com/r/aikocute/xrayr)
+[![CI build status](https://github.com/AikoCute/XrayR/workflows/CI/badge.svg)](https://github.com/AikoCute/XrayR/actions)
 </div>
 
 
