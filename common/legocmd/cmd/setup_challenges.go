@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/AikoCute/AikoXrayR/common/legocmd/log"
+	"github.com/AikoXrayR-Project/XrayR/common/legocmd/log"
 	"github.com/go-acme/lego/v4/challenge"
 	"github.com/go-acme/lego/v4/challenge/dns01"
 	"github.com/go-acme/lego/v4/challenge/http01"

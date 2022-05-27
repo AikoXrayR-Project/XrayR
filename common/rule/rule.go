@@ -8,7 +8,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/AikoCute/AikoXrayR/api"
+	"github.com/AikoXrayR-Project/XrayR/api"
 	mapset "github.com/deckarep/golang-set"
 )
 
