@@ -18,8 +18,6 @@ jobs:
             goos: dragonfly
           - goarch: 386
             goos: darwin
-          - goarch: 386
-            goos: openbsd
         include:
           # BEIGIN MacOS ARM64
           - goos: darwin
@@ -40,6 +38,12 @@ jobs:
           - goos: android
             goarch: arm64
           # END Android ARM 8
+          # Windows ARM
+          - goos: windows
+            goarch: arm64
+          - goos: windows
+            goarch: arm
+            goarm: 7
           # BEGIN Other architectures
           # BEGIN riscv64 & ARM64
           - goos: linux
@@ -75,6 +79,13 @@ jobs:
             goarch: s390x
           # END S390X
           # END Other architectures
+          # BEGIN OPENBSD ARM
+          - goos: openbsd
+            goarch: arm64
+          - goos: openbsd
+            goarch: arm
+            goarm: 7
+          # END OPENBSD ARM
       fail-fast: false
       
     runs-on: ubuntu-latest
