@@ -84,8 +84,8 @@ jobs:
             goarch: arm64
           - goos: openbsd
             goarch: arm
-            goarm: 7
           # END OPENBSD ARM
+
       fail-fast: false
       
     runs-on: ubuntu-latest
