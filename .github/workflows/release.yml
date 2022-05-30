@@ -84,6 +84,12 @@ jobs:
             goarch: arm64
           - goos: openbsd
             goarch: arm
+          - goos: openbsd
+            goarch: arm
+            goarm : 7
+          - goos: openbsd
+            goarch: arm
+            goarm : 6
           # END OPENBSD ARM
 
       fail-fast: false
