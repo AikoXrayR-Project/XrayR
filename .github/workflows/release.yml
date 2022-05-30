@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         # Include amd64 on all platforms.
-        ggoos: [windows, freebsd, openbsd, linux, dragonfly, darwin]
+        goos: [windows, freebsd, openbsd, linux, dragonfly, darwin]
         goarch: [amd64, 386]
         exclude:
           # Exclude i386 on darwin and dragonfly.
@@ -40,6 +40,12 @@ jobs:
           - goos: android
             goarch: arm64
           # END Android ARM 8
+          # Windows ARM
+          - goos: windows
+            goarch: arm64
+          - goos: windows
+            goarch: arm
+            goarm: 7
           # BEGIN Other architectures
           # BEGIN riscv64 & ARM64
           - goos: linux
@@ -75,13 +81,15 @@ jobs:
             goarch: s390x
           # END S390X
           # END Other architectures
-          # Windows ARM
-          - goos: windows
+          # BEGIN OPENBSD ARM
+          - goos: openbsd
             goarch: arm64
-          - goos: windows
+          - goos: openbsd
             goarch: arm
-            goarm: 7
-          # BEGIN Other architectures
+          - goos: openbsd
+            goarch: arm
+            goarm : 7
+          # END OPENBSD ARM
 
       fail-fast: false
       
