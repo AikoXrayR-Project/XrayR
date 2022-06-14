@@ -5,14 +5,6 @@ import (
 	"regexp"
 )
 
-// redis
-type Redis struct {
-	Network string `json:"network"`
-	Addr    string `json:"addr"`
-	DB      int    `json:"db"`
-	Key     string `json:"key"`
-}
-
 // API config
 type Config struct {
 	APIHost             string  `mapstructure:"ApiHost"`

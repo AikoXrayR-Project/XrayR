@@ -74,11 +74,20 @@ func (c *Controller) Start() error {
 	}
 	// Add Rule Manager
 	if !c.config.DisableGetRule {
-		if ruleList, err := c.apiClient.GetNodeRule(); err != nil {
+		if ruleList, protocolRule, err := c.apiClient.GetNodeRule(); err != nil {
 			log.Printf("Get rule list filed: %s", err)
-		} else if len(*ruleList) > 0 {
-			if err := c.UpdateRule(c.Tag, *ruleList); err != nil {
-				log.Print(err)
+		} else {
+			if len(*ruleList) > 0 {
+				if err := c.UpdateRule(c.Tag, *ruleList); err != nil {
+					log.Print(err)
+				}
+			}
+			if protocolRule != nil {
+				if len(*protocolRule) != 0 {
+					if err := c.UpdateProtocolRule(c.Tag, *protocolRule); err != nil {
+						log.Print(err)
+					}
+				}
 			}
 		}
 	}
@@ -174,11 +183,20 @@ func (c *Controller) nodeInfoMonitor() (err error) {
 
 	// Check Rule
 	if !c.config.DisableGetRule {
-		if ruleList, err := c.apiClient.GetNodeRule(); err != nil {
+		if ruleList, protocolRule, err := c.apiClient.GetNodeRule(); err != nil {
 			log.Printf("Get rule list filed: %s", err)
-		} else if len(*ruleList) > 0 {
-			if err := c.UpdateRule(c.Tag, *ruleList); err != nil {
-				log.Print(err)
+		} else {
+			if len(*ruleList) > 0 {
+				if err := c.UpdateRule(c.Tag, *ruleList); err != nil {
+					log.Print(err)
+				}
+			}
+			if protocolRule != nil {
+				if len(*protocolRule) != 0 {
+					if err := c.UpdateProtocolRule(c.Tag, *protocolRule); err != nil {
+						log.Print(err)
+					}
+				}
 			}
 		}
 	}

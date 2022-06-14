@@ -266,25 +266,35 @@ func (c *APIClient) ReportUserTraffic(userTraffic *[]api.UserTraffic) error {
 }
 
 // GetNodeRule implements the API interface
-func (c *APIClient) GetNodeRule() (*[]api.DetectRule, error) {
+func (c *APIClient) GetNodeRule() (*[]api.DetectRule, *[]string, error) {
 	ruleList := c.LocalRuleList
 	if c.NodeType != "V2ray" {
-		return &ruleList, nil
+		return &ruleList, nil, nil
 	}
 
 	// V2board only support the rule for v2ray
 	// fix: reuse config response
 	c.access.Lock()
 	defer c.access.Unlock()
-	ruleListResponse := c.ConfigResp.Get("routing").Get("rules").GetIndex(1).Get("domain").MustStringArray()
-	for i, rule := range ruleListResponse {
-		ruleListItem := api.DetectRule{
-			ID:      i,
-			Pattern: regexp.MustCompile(rule),
+	rulesLen := len(c.ConfigResp.Get("routing").Get("rules").MustArray())
+	if rulesLen >= 2 {
+		ruleListResponse := c.ConfigResp.Get("routing").Get("rules").GetIndex(1).Get("domain").MustStringArray()
+		for i, rule := range ruleListResponse {
+			ruleListItem := api.DetectRule{
+				ID:      i,
+				Pattern: regexp.MustCompile(rule),
+			}
+			ruleList = append(ruleList, ruleListItem)
 		}
-		ruleList = append(ruleList, ruleListItem)
 	}
-	return &ruleList, nil
+	var protocolRule []string
+	if rulesLen >= 3 {
+		ruleListResponse := c.ConfigResp.Get("routing").Get("rules").GetIndex(2).Get("domain").MustStringArray()
+		for _, r := range ruleListResponse {
+			protocolRule = append(protocolRule, r)
+		}
+	}
+	return &ruleList, &protocolRule, nil
 }
 
 // ReportNodeStatus implements the API interface

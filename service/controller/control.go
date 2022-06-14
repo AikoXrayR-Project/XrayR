@@ -141,6 +141,12 @@ func (c *Controller) UpdateInboundLimiter(tag string, updatedUserList *[]api.Use
 	return err
 }
 
+func (c *Controller) UpdateProtocolRule(tag string, newRuleList []string) error {
+	dispather := c.server.GetFeature(routing.DispatcherType()).(*mydispatcher.DefaultDispatcher)
+	err := dispather.RuleManager.UpdateProtocolRule(tag, newRuleList)
+	return err
+}
+
 func (c *Controller) DeleteInboundLimiter(tag string) error {
 	dispather := c.server.GetFeature(routing.DispatcherType()).(*mydispatcher.DefaultDispatcher)
 	err := dispather.Limiter.DeleteInboundLimiter(tag)

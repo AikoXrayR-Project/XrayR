@@ -328,7 +328,7 @@ func (c *APIClient) ReportUserTraffic(userTraffic *[]api.UserTraffic) error {
 }
 
 // GetNodeRule will pull the audit rule form sspanel
-func (c *APIClient) GetNodeRule() (*[]api.DetectRule, error) {
+func (c *APIClient) GetNodeRule() (*[]api.DetectRule, *[]string, error) {
 	var path string
 	switch c.NodeType {
 	case "V2ray":
@@ -338,7 +338,7 @@ func (c *APIClient) GetNodeRule() (*[]api.DetectRule, error) {
 	case "Shadowsocks":
 		path = fmt.Sprintf("/api/ss/v1/nodeRule/%d", c.NodeID)
 	default:
-		return nil, fmt.Errorf("Unsupported Node type: %s", c.NodeType)
+		return nil, nil, fmt.Errorf("Unsupported Node type: %s", c.NodeType)
 	}
 
 	res, err := c.createCommonRequest().
@@ -348,18 +348,18 @@ func (c *APIClient) GetNodeRule() (*[]api.DetectRule, error) {
 
 	response, err := c.parseResponse(res, path, err)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	ruleListResponse := new(NodeRule)
 
 	if err := json.Unmarshal(response.Data, ruleListResponse); err != nil {
-		return nil, fmt.Errorf("Unmarshal %s failed: %s", reflect.TypeOf(ruleListResponse), err)
+		return nil, nil, fmt.Errorf("Unmarshal %s failed: %s", reflect.TypeOf(ruleListResponse), err)
 	}
 	ruleList := c.LocalRuleList
 	// Only support reject rule type
 	if ruleListResponse.Mode != "reject" {
-		return &ruleList, nil
+		return &ruleList, nil, nil
 	} else {
 		for _, r := range ruleListResponse.Rules {
 			if r.Type == "reg" {
@@ -372,7 +372,7 @@ func (c *APIClient) GetNodeRule() (*[]api.DetectRule, error) {
 		}
 	}
 
-	return &ruleList, nil
+	return &ruleList, nil, nil
 }
 
 // ReportIllegal reports the user illegal behaviors

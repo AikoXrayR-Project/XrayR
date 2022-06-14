@@ -11,7 +11,7 @@ type API interface {
 	ReportNodeOnlineUsers(onlineUser *[]OnlineUser) (err error)
 	ReportUserTraffic(userTraffic *[]UserTraffic) (err error)
 	Describe() ClientInfo
-	GetNodeRule() (ruleList *[]DetectRule, err error)
+	GetNodeRule() (ruleList *[]DetectRule, protocolRule *[]string, err error)
 	ReportIllegal(detectResultList *[]DetectResult) (err error)
 	Debug()
 }

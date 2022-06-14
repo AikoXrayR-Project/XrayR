@@ -14,12 +14,14 @@ import (
 
 type RuleManager struct {
 	InboundRule         *sync.Map // Key: Tag, Value: []api.DetectRule
+	InboundProtocolRule *sync.Map // Key: Tag, Value: []string
 	InboundDetectResult *sync.Map // key: Tag, Value: mapset.NewSet []api.DetectResult
 }
 
 func New() *RuleManager {
 	return &RuleManager{
 		InboundRule:         new(sync.Map),
+		InboundProtocolRule: new(sync.Map),
 		InboundDetectResult: new(sync.Map),
 	}
 }
@@ -29,6 +31,16 @@ func (r *RuleManager) UpdateRule(tag string, newRuleList []api.DetectRule) error
 		oldRuleList := value.([]api.DetectRule)
 		if !reflect.DeepEqual(oldRuleList, newRuleList) {
 			r.InboundRule.Store(tag, newRuleList)
+		}
+	}
+	return nil
+}
+
+func (r *RuleManager) UpdateProtocolRule(tag string, ruleList []string) error {
+	if value, ok := r.InboundProtocolRule.LoadOrStore(tag, ruleList); ok {
+		old := value.([]string)
+		if !reflect.DeepEqual(old, ruleList) {
+			r.InboundProtocolRule.Store(tag, ruleList)
 		}
 	}
 	return nil
@@ -79,4 +91,16 @@ func (r *RuleManager) Detect(tag string, destination string, email string) (reje
 		}
 	}
 	return reject
+}
+
+func (r *RuleManager) ProtocolDetect(tag string, protocol string) bool {
+	if value, ok := r.InboundProtocolRule.Load(tag); ok {
+		ruleList := value.([]string)
+		for _, r := range ruleList {
+			if r == protocol {
+				return true
+			}
+		}
+	}
+	return false
 }

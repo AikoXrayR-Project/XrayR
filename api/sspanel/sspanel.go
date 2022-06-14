@@ -318,7 +318,7 @@ func (c *APIClient) ReportUserTraffic(userTraffic *[]api.UserTraffic) error {
 }
 
 // GetNodeRule will pull the audit rule form sspanel
-func (c *APIClient) GetNodeRule() (*[]api.DetectRule, error) {
+func (c *APIClient) GetNodeRule() (*[]api.DetectRule, *[]string, error) {
 	ruleList := c.LocalRuleList
 	path := "/mod_mu/func/detect_rules"
 	res, err := c.client.R().
@@ -328,13 +328,13 @@ func (c *APIClient) GetNodeRule() (*[]api.DetectRule, error) {
 
 	response, err := c.parseResponse(res, path, err)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	ruleListResponse := new([]RuleItem)
 
 	if err := json.Unmarshal(response.Data, ruleListResponse); err != nil {
-		return nil, fmt.Errorf("Unmarshal %s failed: %s", reflect.TypeOf(ruleListResponse), err)
+		return nil, nil, fmt.Errorf("Unmarshal %s failed: %s", reflect.TypeOf(ruleListResponse), err)
 	}
 
 	for _, r := range *ruleListResponse {
@@ -343,7 +343,7 @@ func (c *APIClient) GetNodeRule() (*[]api.DetectRule, error) {
 			Pattern: regexp.MustCompile(r.Content),
 		})
 	}
-	return &ruleList, nil
+	return &ruleList, nil, nil
 }
 
 // ReportIllegal reports the user illegal behaviors
