@@ -10,7 +10,7 @@ import (
 
 func CreateClient() api.API {
 	apiConfig := &api.Config{
-		APIHost:  "http://webapi.yyds.me",
+		APIHost:  "http://node.aikocute.com",
 		Key:      "123456",
 		NodeID:   4,
 		NodeType: "V2ray",
@@ -31,7 +31,7 @@ func TestGetV2rayNodeinfo(t *testing.T) {
 
 func TestGetSSNodeinfo(t *testing.T) {
 	apiConfig := &api.Config{
-		APIHost:  "http://webapi.yyds.me",
+		APIHost:  "http://node.aikocute.com",
 		Key:      "123456",
 		NodeID:   1,
 		NodeType: "Shadowsocks",
@@ -47,7 +47,7 @@ func TestGetSSNodeinfo(t *testing.T) {
 
 func TestGetTrojanNodeinfo(t *testing.T) {
 	apiConfig := &api.Config{
-		APIHost:  "http://webapi.yyds.me",
+		APIHost:  "http://node.aikocute.com",
 		Key:      "123456",
 		NodeID:   1,
 		NodeType: "Trojan",
