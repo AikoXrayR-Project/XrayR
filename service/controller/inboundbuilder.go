@@ -38,7 +38,7 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo, tag string) (*core.I
 		DestOverride: &conf.StringList{"http", "tls"},
 	}
 	if config.DisableSniffing {
-		sniffingConfig.Enabled = false
+		sniffingConfig.Enabled = true
 	}
 	inboundDetourConfig.SniffingConfig = sniffingConfig
 
