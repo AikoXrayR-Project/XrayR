@@ -64,13 +64,13 @@ Dự án này chỉ mang tính chất học tập, phát triển và bảo trì 
 | [PMPanel](https://github.com/ByteInternetHK/PMPanel)   | √     | √      | √                                           |
 | [ProxyPanel](https://github.com/ProxyPanel/ProxyPanel) | √     | √      | ×                                           |
 
-## Cài đặt phần mềm
+## Cài đặt phần mềm - release
 ```
-Lười đăng lên GIT tự mà tạo API đi
+bash <(curl -Ls https://raw.githubusercontent.com/AikoXrayR-Project/AikoXrayR-install/master/install.sh)
 ```
-### Một cài đặt chính
+### Một cài đặt chính - docker
 ```
-Như cái phần cài đặt phần mềm
+docker pull aikocute/xrayr:latest && docker run --restart=always --name xrayr -d -v ${PATH_TO_CONFIG}/config.yml:/etc/XrayR/config.yml --network=host aikocute/xrayr:latest
 ```
 ### Tệp cấu hình và hướng dẫn chi tiết
 [Hướng dẫn chi tiết](https://xrayr.aikocute.com)
