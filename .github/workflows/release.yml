@@ -96,18 +96,8 @@ jobs:
           # END S390X
           # END Other architectures
           # Other platforms
-          - goos: android
-            goarch: arm64
-          - goos: darwin
-            goarch: arm64
-          - goos: freebsd
-            goarch: arm64
-          - goos: linux
-            goarch: arm64
           - goos: linux
             goarch: mips
-          - goos: windows
-            goarch: arm64
           # END
       fail-fast: false
       
