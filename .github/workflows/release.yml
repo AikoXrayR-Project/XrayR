@@ -94,11 +94,6 @@ jobs:
           - goos: linux
             goarch: s390x
           # END S390X
-          # END Other architectures
-          # Other platforms
-          - goos: linux
-            goarch: mips
-          # END
       fail-fast: false
       
     runs-on: ubuntu-latest
