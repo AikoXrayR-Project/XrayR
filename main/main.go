@@ -49,8 +49,8 @@ func getConfig() *viper.Viper {
 		os.Setenv("XRAY_LOCATION_CONFIG", configPath)
 	} else {
 		// Set default config path
-		config.SetConfigName("config")
-		config.SetConfigType("yml")
+		config.SetConfigName("aiko")
+		config.SetConfigType("conf")
 		config.AddConfigPath(".")
 
 	}
