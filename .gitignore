@@ -1,4 +1,4 @@
-main/config.yml
+main/aiko.yml
 main/main
 main/XrayR
 main/XrayR*
@@ -11,6 +11,6 @@ common/legocmd/.lego/
 .vscode/launch.json
 main/.lego
 main/cert
-main/config.yml
+main/aiko.yml
 ./vscode
 .idea/*
