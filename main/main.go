@@ -23,7 +23,7 @@ var (
 )
 
 var (
-	version  = "1.4.0"
+	version  = "1.4.0.7 - Beta Version"
 	codename = "Aiko XrayR"
 	intro    = "Backend XrayR For Aiko"
 )
@@ -49,7 +49,7 @@ func getConfig() *viper.Viper {
 		os.Setenv("XRAY_LOCATION_CONFIG", configPath)
 	} else {
 		// Set default config path
-		config.SetConfigName("config")
+		config.SetConfigName("aiko")
 		config.SetConfigType("yml")
 		config.AddConfigPath(".")
 

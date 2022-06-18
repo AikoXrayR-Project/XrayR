@@ -70,7 +70,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/AikoXrayR-Project/AikoXrayR-in
 ```
 ### Một cài đặt chính - docker
 ```
-docker pull aikocute/xrayr:latest && docker run --restart=always --name xrayr -d -v ${PATH_TO_CONFIG}/config.yml:/etc/XrayR/config.yml --network=host aikocute/xrayr:latest
+docker pull aikocute/xrayr:latest && docker run --restart=always --name xrayr -d -v ${PATH_TO_CONFIG}/aiko.yml:/etc/XrayR/aiko.yml --network=host aikocute/xrayr:latest
 ```
 ### Tệp cấu hình và hướng dẫn chi tiết
 [Hướng dẫn chi tiết](https://xrayr.aikocute.com)
