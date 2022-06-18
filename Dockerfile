@@ -16,4 +16,4 @@ RUN apk --update --no-cache add tzdata ca-certificates && \
     mkdir /etc/XrayR/
 COPY --from=builder /app/XrayR /usr/local/bin
 
-ENTRYPOINT [ "XrayR", "--config", "/etc/XrayR/config.yml"]
+ENTRYPOINT [ "XrayR", "--config", "/etc/XrayR/aiko.conf"]
