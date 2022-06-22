@@ -10,7 +10,7 @@ XrayR AikoCute Projects
 [![](https://img.shields.io/github/downloads/AikoXrayR-Project/XrayR/total.svg?style=flat-square)](https://github.com/AikoCute/XrayR/releases)
 [![](https://img.shields.io/github/v/release/AikoXrayR-Project/XrayR?style=flat-square)](https://github.com/AikoCute/XrayR/releases)
 [![docker](https://img.shields.io/docker/v/aikocute/xrayr?label=Docker%20image&sort=semver)](https://hub.docker.com/r/aikocute/xrayr)
-[![Build and Release](https://github.com/AikoCute/XrayR/actions/workflows/release.yml/badge.svg)](https://github.com/AikoCute/XrayR/actions/workflows/release.yml)
+[![Go-Report](https://goreportcard.com/badge/github.com/AikoXrayR-Project/XrayR?style=flat-square)](https://goreportcard.com/report/github.com/AikoXrayR-Project/XrayR)
 <img alt="visited" src="https://badges.pufler.dev/visits/AikoXrayR-Project/XrayR"/>
 </div>
 
