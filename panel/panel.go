@@ -65,7 +65,7 @@ func (p *Panel) loadCore(panelConfig *Config) *core.Instance {
 	}
 	dnsConfig, err := coreDnsConfig.Build()
 	if err != nil {
-		log.Panicf("Failed to understand DNS config, Please check: https://xtls.github.io/config/dns.html for help: %s", err)
+		log.Panicf("Failed to understand DNS config, for help: %s", err)
 	}
 	// Routing config
 	coreRouterConfig := &conf.RouterConfig{}
@@ -144,7 +144,7 @@ func (p *Panel) loadCore(panelConfig *Config) *core.Instance {
 	if err != nil {
 		log.Panicf("failed to create instance: %s", err)
 	}
-	log.Printf("Xray Core Version: %s", core.Version())
+	log.Printf("AikoXray Core Version: %s", core.Version())
 
 	return server
 }
@@ -153,7 +153,7 @@ func (p *Panel) loadCore(panelConfig *Config) *core.Instance {
 func (p *Panel) Start() {
 	p.access.Lock()
 	defer p.access.Unlock()
-	log.Print("Start the panel..")
+	log.Print("Start the AikoXrayR..")
 	// Load Core
 	server := p.loadCore(p.panelConfig)
 	if err := server.Start(); err != nil {
