@@ -11,7 +11,6 @@ XrayR AikoCute Projects
 [![](https://img.shields.io/github/v/release/AikoXrayR-Project/XrayR?style=flat-square)](https://github.com/AikoCute/XrayR/releases)
 [![docker](https://img.shields.io/docker/v/aikocute/xrayr?label=Docker%20image&sort=semver)](https://hub.docker.com/r/aikocute/xrayr)
 [![Go-Report](https://goreportcard.com/badge/github.com/AikoXrayR-Project/XrayR?style=flat-square)](https://goreportcard.com/report/github.com/AikoXrayR-Project/XrayR)
-<img alt="visited" src="https://badges.pufler.dev/visits/AikoXrayR-Project/XrayR"/>
 </div>
 
 
