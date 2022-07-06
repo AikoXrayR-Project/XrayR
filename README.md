@@ -61,7 +61,7 @@ Dự án này chỉ mang tính chất học tập, phát triển và bảo trì 
 | [sspanel-uim](https://github.com/Anankke/SSPanel-Uim)  | √     | √      | √ (Đa người dùng một cổng và V2ray-Plugin)  |
 | [v2board](https://github.com/v2board/v2board)          | √     | √      | √                                           |
 | [PMPanel](https://github.com/ByteInternetHK/PMPanel)   | √     | √      | √                                           |
-| [ProxyPanel](https://github.com/ProxyPanel/ProxyPanel) | √     | √      | ×                                           |
+| [ProxyPanel](https://github.com/ProxyPanel/ProxyPanel) | √     | √      | √                                           |
 
 ## Cài đặt phần mềm - release
 ```
