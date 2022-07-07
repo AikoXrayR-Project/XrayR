@@ -1,7 +1,6 @@
-# XrayR
+# AikoXrayR
 
-[![](https://img.shields.io/badge/TgChat-@XrayR讨论-blue.svg)](https://t.me/XrayR_project)
-[![](https://img.shields.io/badge/Channel-@XrayR通知-blue.svg)](https://t.me/XrayR_channel)
+[![](https://img.shields.io/badge/TgChat-@AikoXrayR-blue.svg)](https://t.me/AikoXrayR)
 
 A Xray backend framework that can easily support many panels.
 
@@ -64,7 +63,7 @@ A Xray backend framework that can easily support many panels.
 ### 一键安装
 
 ```
-bash <(curl -Ls https://raw.githubusercontents.com/XrayRR/XrayR-script/master/install.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/AikoXrayR-Project/AikoXrayR-install/master/install.sh)
 ```
 
 ### 使用Docker部署
@@ -92,6 +91,5 @@ bash <(curl -Ls https://raw.githubusercontents.com/XrayRR/XrayR-script/master/in
 
 ## Telgram
 
-[XrayR后端讨论](https://t.me/XrayR_project)
+[XrayR后端讨论](https://t.me/AikoXrayR)
 
-[XrayR通知](https://t.me/XrayR_channel)
