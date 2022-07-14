@@ -1,9 +1,10 @@
-package Aiko_test
+package aiko_test
 
 import (
 	"testing"
 
 	"github.com/AikoXrayR-Project/XrayR/api"
+	"github.com/AikoXrayR-Project/XrayR/api/aiko"
 )
 
 func CreateClient() api.API {

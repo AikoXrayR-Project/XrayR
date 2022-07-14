@@ -1,4 +1,4 @@
-package Aiko
+package aiko
 
 import (
 	"bufio"
@@ -272,7 +272,7 @@ func (c *APIClient) GetNodeRule() (*[]api.DetectRule, *[]string, error) {
 		return &ruleList, nil, nil
 	}
 
-	// Aiko only support the rule for v2ray
+	// aiko only support the rule for v2ray
 	// fix: reuse config response
 	c.access.Lock()
 	defer c.access.Unlock()
@@ -373,7 +373,7 @@ func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *simplejson.Json) (*
 	inboundInfo := simplejson.New()
 	if tmpInboundInfo, ok := nodeInfoResponse.CheckGet("inbound"); ok {
 		inboundInfo = tmpInboundInfo
-		// Compatible with Aiko 1.5.5-dev
+		// Compatible with aiko 1.5.5-dev
 	} else if tmpInboundInfo, ok := nodeInfoResponse.CheckGet("inbounds"); ok {
 		tmpInboundInfo := tmpInboundInfo.MustArray()
 		marshalByte, _ := json.Marshal(tmpInboundInfo[0].(map[string]interface{}))
