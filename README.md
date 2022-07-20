@@ -5,7 +5,7 @@
 # AikoXrayR
 XrayR AikoCute Projects
 
-[![](https://img.shields.io/badge/Telegram-group-green?style=flat-square)](https://t.me/aikocutehotme)
+[![](https://img.shields.io/badge/Telegram-group-green?style=flat-square)](https://t.me/AikoXrayR)
 [![](https://img.shields.io/badge/Telegram-channel-blue?style=flat-square)](https://t.me/AikoCute_Support)
 [![](https://img.shields.io/github/downloads/AikoXrayR-Project/XrayR/total.svg?style=flat-square)](https://github.com/AikoCute/XrayR/releases)
 [![](https://img.shields.io/github/v/release/AikoXrayR-Project/XrayR?style=flat-square)](https://github.com/AikoCute/XrayR/releases)
