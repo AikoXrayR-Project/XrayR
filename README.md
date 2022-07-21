@@ -75,7 +75,7 @@ docker pull aikocute/xrayr:latest && docker run --restart=always --name xrayr -d
 [Hướng dẫn chi tiết](https://xrayr.aikocute.com)
 ## Telgram
 
-[AikoTelegram](https://t.me/aikocutehotme)
+[AikoTelegram](https://t.me/AikoXrayR)
 
 ## Stargazers over time
 
