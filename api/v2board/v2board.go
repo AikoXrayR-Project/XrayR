@@ -345,8 +345,9 @@ func (c *APIClient) ParseSSNodeResponse() (*api.NodeInfo, error) {
 	if len(*userInfo) > 0 {
 		port = (*userInfo)[0].Port
 		method = (*userInfo)[0].Method
+	} else {
+		return nil, fmt.Errorf("shadowsocks node need a active user")
 	}
-
 	// Create GeneralNodeInfo
 	nodeinfo := &api.NodeInfo{
 		NodeType:          c.NodeType,
