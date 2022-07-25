@@ -8,7 +8,7 @@ RUN go mod download && \
     go build -v -o XrayR -trimpath -ldflags "-s -w -buildid=" ./main
 
 # Release
-FROM alpine
+FROM alpine:latest 
 RUN apk --update --no-cache add tzdata ca-certificates && \
     cp /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime && \
     mkdir /etc/XrayR/
