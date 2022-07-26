@@ -15,13 +15,13 @@ import (
 // API is the interface for different panel's api.
 
 type Config struct {
-	APIHost             string  `mapstructure:"ApiHost"`
-	NodeID              int     `mapstructure:"NodeID"`
-	Key                 string  `mapstructure:"ApiKey"`
-	NodeType            string  `mapstructure:"NodeType"`
-	EnableVless         bool    `mapstructure:"EnableVless"`
-	EnableXTLS          bool    `mapstructure:"EnableXTLS"`
-	EnableSS2022        bool    `mapstructure:"EnableSS2022"`
+	APIHost     string `mapstructure:"ApiHost"`
+	NodeID      int    `mapstructure:"NodeID"`
+	Key         string `mapstructure:"ApiKey"`
+	NodeType    string `mapstructure:"NodeType"`
+	EnableVless bool   `mapstructure:"EnableVless"`
+	EnableXTLS  bool   `mapstructure:"EnableXTLS"`
+	//EnableSS2022        bool    `mapstructure:"EnableSS2022"`
 	Timeout             int     `mapstructure:"Timeout"`
 	SpeedLimit          float64 `mapstructure:"SpeedLimit"`
 	DeviceLimit         int     `mapstructure:"DeviceLimit"`
