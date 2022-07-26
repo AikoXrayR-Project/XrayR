@@ -62,6 +62,7 @@ Dự án này chỉ mang tính chất học tập, phát triển và bảo trì 
 | [v2board](https://github.com/v2board/v2board)          | √     | √      | √                                           |
 | [PMPanel](https://github.com/ByteInternetHK/PMPanel)   | √     | √      | √                                           |
 | [ProxyPanel](https://github.com/ProxyPanel/ProxyPanel) | √     | √      | √                                           |
+|  Xflash ( Update From v1.6.1 using panel xflash)       | √     | √      | √                                           |
 
 ## Cài đặt phần mềm - release
 ```
