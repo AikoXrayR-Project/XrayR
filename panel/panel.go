@@ -173,7 +173,7 @@ func (p *Panel) Start() {
 		case "Proxypanel":
 			apiClient = proxypanel.New(nodeConfig.ApiConfig)
 		case "Xflash":
-			apiClient = proxypanel.New(nodeConfig.ApiConfig)
+			apiClient = xflash.New(nodeConfig.ApiConfig)
 		default:
 			log.Panicf("Unsupport panel type: %s", nodeConfig.PanelType)
 		}
