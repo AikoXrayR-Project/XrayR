@@ -13,6 +13,7 @@ import (
 	"github.com/AikoXrayR-Project/XrayR/api/proxypanel"
 	"github.com/AikoXrayR-Project/XrayR/api/sspanel"
 	"github.com/AikoXrayR-Project/XrayR/api/v2board"
+	"github.com/AikoXrayR-Project/XrayR/api/xflash"
 	_ "github.com/AikoXrayR-Project/XrayR/main/distro/all"
 	"github.com/AikoXrayR-Project/XrayR/service"
 	"github.com/AikoXrayR-Project/XrayR/service/controller"
