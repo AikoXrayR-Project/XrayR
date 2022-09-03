@@ -26,7 +26,7 @@ jobs:
     strategy:
       matrix:
         # Include amd64 on all platforms.
-        goos: [windows, freebsd, linux, dragonfly, darwin]
+        goos: [windows, freebsd, openbsd, linux, dragonfly, darwin]
         goarch: [amd64, 386]
         exclude:
           # Exclude i386 on darwin and dragonfly.
@@ -34,6 +34,8 @@ jobs:
             goos: dragonfly
           - goarch: 386
             goos: darwin
+          - goarch: 386
+            goos: openbsd
         include:
           # BEIGIN MacOS ARM64
           - goos: darwin
@@ -78,8 +80,8 @@ jobs:
             goarch: mips
           # END MIPS
           # BEGIN PPC
-          - goos: linux
-            goarch: ppc64
+          # - goos: linux # Removed due to the unsupport of shirou/gopsutil 
+          #   goarch: ppc64
           - goos: linux
             goarch: ppc64le
           # END PPC
@@ -94,6 +96,7 @@ jobs:
           - goos: linux
             goarch: s390x
           # END S390X
+          # END Other architectures
       fail-fast: false
       
     runs-on: ubuntu-latest
