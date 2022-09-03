@@ -15,21 +15,21 @@ func TestBuildV2ray(t *testing.T) {
 		SpeedLimit:        0,
 		AlterID:           2,
 		TransportProtocol: "ws",
-		Host:              "test.aikocute.com",
+		Host:              "test.test.tk",
 		Path:              "v2ray",
 		EnableTLS:         false,
 		TLSType:           "tls",
 	}
 	certConfig := &CertConfig{
 		CertMode:   "http",
-		CertDomain: "test.aikocute.com",
+		CertDomain: "test.test.tk",
 		Provider:   "alidns",
 		Email:      "test@gmail.com",
 	}
 	config := &Config{
 		CertConfig: certConfig,
 	}
-	_, err := InboundBuilder(config, nodeInfo)
+	_, err := InboundBuilder(config, nodeInfo, "test_tag")
 	if err != nil {
 		t.Error(err)
 	}
@@ -43,7 +43,7 @@ func TestBuildTrojan(t *testing.T) {
 		SpeedLimit:        0,
 		AlterID:           2,
 		TransportProtocol: "tcp",
-		Host:              "test.aikocute.com",
+		Host:              "trojan.test.tk",
 		Path:              "v2ray",
 		EnableTLS:         false,
 		TLSType:           "tls",
@@ -53,7 +53,7 @@ func TestBuildTrojan(t *testing.T) {
 	DNSEnv["ALICLOUD_SECRET_KEY"] = "bbb"
 	certConfig := &CertConfig{
 		CertMode:   "dns",
-		CertDomain: "trojan.aikocute.com",
+		CertDomain: "trojan.test.tk",
 		Provider:   "alidns",
 		Email:      "test@gmail.com",
 		DNSEnv:     DNSEnv,
@@ -61,7 +61,7 @@ func TestBuildTrojan(t *testing.T) {
 	config := &Config{
 		CertConfig: certConfig,
 	}
-	_, err := InboundBuilder(config, nodeInfo)
+	_, err := InboundBuilder(config, nodeInfo, "test_tag")
 	if err != nil {
 		t.Error(err)
 	}
@@ -75,7 +75,7 @@ func TestBuildSS(t *testing.T) {
 		SpeedLimit:        0,
 		AlterID:           2,
 		TransportProtocol: "tcp",
-		Host:              "test.aikocute.com",
+		Host:              "test.test.tk",
 		Path:              "v2ray",
 		EnableTLS:         false,
 		TLSType:           "tls",
@@ -85,7 +85,7 @@ func TestBuildSS(t *testing.T) {
 	DNSEnv["ALICLOUD_SECRET_KEY"] = "bbb"
 	certConfig := &CertConfig{
 		CertMode:   "dns",
-		CertDomain: "trojan.aikocute.com",
+		CertDomain: "trojan.test.tk",
 		Provider:   "alidns",
 		Email:      "test@me.com",
 		DNSEnv:     DNSEnv,
@@ -93,7 +93,7 @@ func TestBuildSS(t *testing.T) {
 	config := &Config{
 		CertConfig: certConfig,
 	}
-	_, err := InboundBuilder(config, nodeInfo)
+	_, err := InboundBuilder(config, nodeInfo, "test_tag")
 	if err != nil {
 		t.Error(err)
 	}

@@ -25,15 +25,15 @@ type NodeStatus struct {
 	CPU    float64
 	Mem    float64
 	Disk   float64
-	Uptime int
+	Uptime uint64
 }
 
 type NodeInfo struct {
 	NodeType          string // Must be V2ray, Trojan, and Shadowsocks
 	NodeID            int
-	Port              int
+	Port              uint32
 	SpeedLimit        uint64 // Bps
-	AlterID           int
+	AlterID           uint16
 	TransportProtocol string
 	FakeType          string
 	Host              string
@@ -50,7 +50,7 @@ type UserInfo struct {
 	UID           int
 	Email         string
 	Passwd        string
-	Port          int
+	Port          uint32
 	Method        string
 	SpeedLimit    uint64 // Bps
 	DeviceLimit   int
@@ -59,7 +59,7 @@ type UserInfo struct {
 	Obfs          string
 	ObfsParam     string
 	UUID          string
-	AlterID       int
+	AlterID       uint16
 }
 
 type OnlineUser struct {

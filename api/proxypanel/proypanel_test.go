@@ -142,12 +142,12 @@ func TestReportReportUserTraffic(t *testing.T) {
 func TestGetNodeRule(t *testing.T) {
 	client := CreateClient()
 	client.Debug()
-	ruleList, protocolRule, err := client.GetNodeRule()
+	ruleList, err := client.GetNodeRule()
 	if err != nil {
 		t.Error(err)
 	}
 
-	t.Log(ruleList, protocolRule)
+	t.Log(ruleList)
 }
 
 func TestReportIllegal(t *testing.T) {

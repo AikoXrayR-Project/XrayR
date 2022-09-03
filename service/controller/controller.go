@@ -3,16 +3,20 @@ package controller
 import (
 	"fmt"
 	"log"
-	"math"
 	"reflect"
 	"time"
 
 	"github.com/AikoXrayR-Project/XrayR/api"
+	"github.com/AikoXrayR-Project/XrayR/app/mydispatcher"
 	"github.com/AikoXrayR-Project/XrayR/common/legocmd"
 	"github.com/AikoXrayR-Project/XrayR/common/serverstatus"
 	"github.com/xtls/xray-core/common/protocol"
 	"github.com/xtls/xray-core/common/task"
 	"github.com/xtls/xray-core/core"
+	"github.com/xtls/xray-core/features/inbound"
+	"github.com/xtls/xray-core/features/outbound"
+	"github.com/xtls/xray-core/features/routing"
+	"github.com/xtls/xray-core/features/stats"
 )
 
 type Controller struct {
@@ -26,15 +30,23 @@ type Controller struct {
 	nodeInfoMonitorPeriodic *task.Periodic
 	userReportPeriodic      *task.Periodic
 	panelType               string
+	ihm                     inbound.Manager
+	ohm                     outbound.Manager
+	stm                     stats.Manager
+	dispatcher              *mydispatcher.DefaultDispatcher
 }
 
 // New return a Controller service with default parameters.
 func New(server *core.Instance, api api.API, config *Config, panelType string) *Controller {
 	controller := &Controller{
-		server:    server,
-		config:    config,
-		apiClient: api,
-		panelType: panelType,
+		server:     server,
+		config:     config,
+		apiClient:  api,
+		panelType:  panelType,
+		ihm:        server.GetFeature(inbound.ManagerType()).(inbound.Manager),
+		ohm:        server.GetFeature(outbound.ManagerType()).(outbound.Manager),
+		stm:        server.GetFeature(stats.ManagerType()).(stats.Manager),
+		dispatcher: server.GetFeature(routing.DispatcherType()).(*mydispatcher.DefaultDispatcher),
 	}
 	return controller
 }
@@ -74,20 +86,11 @@ func (c *Controller) Start() error {
 	}
 	// Add Rule Manager
 	if !c.config.DisableGetRule {
-		if ruleList, protocolRule, err := c.apiClient.GetNodeRule(); err != nil {
+		if ruleList, err := c.apiClient.GetNodeRule(); err != nil {
 			log.Printf("Get rule list filed: %s", err)
-		} else {
-			if len(*ruleList) > 0 {
-				if err := c.UpdateRule(c.Tag, *ruleList); err != nil {
-					log.Print(err)
-				}
-			}
-			if protocolRule != nil {
-				if len(*protocolRule) != 0 {
-					if err := c.UpdateProtocolRule(c.Tag, *protocolRule); err != nil {
-						log.Print(err)
-					}
-				}
+		} else if len(*ruleList) > 0 {
+			if err := c.UpdateRule(c.Tag, *ruleList); err != nil {
+				log.Print(err)
 			}
 		}
 	}
@@ -183,20 +186,11 @@ func (c *Controller) nodeInfoMonitor() (err error) {
 
 	// Check Rule
 	if !c.config.DisableGetRule {
-		if ruleList, protocolRule, err := c.apiClient.GetNodeRule(); err != nil {
+		if ruleList, err := c.apiClient.GetNodeRule(); err != nil {
 			log.Printf("Get rule list filed: %s", err)
-		} else {
-			if len(*ruleList) > 0 {
-				if err := c.UpdateRule(c.Tag, *ruleList); err != nil {
-					log.Print(err)
-				}
-			}
-			if protocolRule != nil {
-				if len(*protocolRule) != 0 {
-					if err := c.UpdateProtocolRule(c.Tag, *protocolRule); err != nil {
-						log.Print(err)
-					}
-				}
+		} else if len(*ruleList) > 0 {
+			if err := c.UpdateRule(c.Tag, *ruleList); err != nil {
+				log.Print(err)
 			}
 		}
 	}
@@ -351,19 +345,14 @@ func (c *Controller) addNewUser(userInfo *[]api.UserInfo, nodeInfo *api.NodeInfo
 		if nodeInfo.EnableVless {
 			users = c.buildVlessUser(userInfo)
 		} else {
-			alterID := 0
-			if (c.panelType == "V2board" || c.panelType == "Xflash") && len(*userInfo) > 0 {
+			var alterID uint16 = 0
+			if (c.panelType == "V2board" || c.panelType == "V2RaySocks") && len(*userInfo) > 0 {
 				// use latest userInfo
 				alterID = (*userInfo)[0].AlterID
 			} else {
 				alterID = nodeInfo.AlterID
 			}
-			if alterID >= 0 && alterID < math.MaxUint16 {
-				users = c.buildVmessUser(userInfo, uint16(alterID))
-			} else {
-				users = c.buildVmessUser(userInfo, 0)
-				return fmt.Errorf("AlterID should between 0 to 1<<16 - 1, set it to 0 for now")
-			}
+			users = c.buildVmessUser(userInfo, alterID)
 		}
 	} else if nodeInfo.NodeType == "Trojan" {
 		users = c.buildTrojanUser(userInfo)
@@ -438,21 +427,36 @@ func (c *Controller) userInfoMonitor() (err error) {
 	}
 
 	// Get User traffic
-	userTraffic := make([]api.UserTraffic, 0)
+	var userTraffic []api.UserTraffic
+	var upCounterList []stats.Counter
+	var downCounterList []stats.Counter
 	for _, user := range *c.userList {
-		up, down := c.getTraffic(c.buildUserTag(&user))
+		up, down, upCounter, downCounter := c.getTraffic(c.buildUserTag(&user))
 		if up > 0 || down > 0 {
 			userTraffic = append(userTraffic, api.UserTraffic{
 				UID:      user.UID,
 				Email:    user.Email,
 				Upload:   up,
 				Download: down})
+
+			if upCounter != nil {
+				upCounterList = append(upCounterList, upCounter)
+			}
+			if downCounter != nil {
+				downCounterList = append(downCounterList, downCounter)
+			}
 		}
 	}
-	if len(userTraffic) > 0 && !c.config.DisableUploadTraffic {
-		err = c.apiClient.ReportUserTraffic(&userTraffic)
+	if len(userTraffic) > 0 {
+		var err error // Define an empty error
+		if !c.config.DisableUploadTraffic {
+			err = c.apiClient.ReportUserTraffic(&userTraffic)
+		}
+		// If report traffic error, not clear the traffic
 		if err != nil {
 			log.Print(err)
+		} else {
+			c.resetTraffic(&upCounterList, &downCounterList)
 		}
 	}
 

@@ -1,21 +1,20 @@
-package pmpanel_test
+package v2raysocks_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/AikoXrayR-Project/XrayR/api"
-	"github.com/AikoXrayR-Project/XrayR/api/pmpanel"
+	"github.com/AikoXrayR-Project/XrayR/api/v2raysocks"
 )
 
 func CreateClient() api.API {
 	apiConfig := &api.Config{
-		APIHost:  "http://webapi.yyds.me",
-		Key:      "123456",
-		NodeID:   4,
+		APIHost:  "https://127.0.0.1/",
+		Key:      "123456789",
+		NodeID:   280002,
 		NodeType: "V2ray",
 	}
-	client := pmpanel.New(apiConfig)
+	client := v2raysocks.New(apiConfig)
 	return client
 }
 
@@ -31,13 +30,12 @@ func TestGetV2rayNodeinfo(t *testing.T) {
 
 func TestGetSSNodeinfo(t *testing.T) {
 	apiConfig := &api.Config{
-		APIHost:  "http://webapi.yyds.me",
-		Key:      "123456",
-		NodeID:   1,
+		APIHost:  "https://127.0.0.1/",
+		Key:      "123456789",
+		NodeID:   280009,
 		NodeType: "Shadowsocks",
 	}
-	client := pmpanel.New(apiConfig)
-	client.Debug()
+	client := v2raysocks.New(apiConfig)
 	nodeInfo, err := client.GetNodeInfo()
 	if err != nil {
 		t.Error(err)
@@ -47,23 +45,12 @@ func TestGetSSNodeinfo(t *testing.T) {
 
 func TestGetTrojanNodeinfo(t *testing.T) {
 	apiConfig := &api.Config{
-		APIHost:  "http://webapi.yyds.me",
-		Key:      "123456",
-		NodeID:   1,
+		APIHost:  "https://127.0.0.1/",
+		Key:      "123456789",
+		NodeID:   280008,
 		NodeType: "Trojan",
 	}
-	client := pmpanel.New(apiConfig)
-	client.Debug()
-	nodeInfo, err := client.GetNodeInfo()
-	if err != nil {
-		t.Error(err)
-	}
-	t.Log(nodeInfo)
-}
-
-func TestGetSSinfo(t *testing.T) {
-	client := CreateClient()
-
+	client := v2raysocks.New(apiConfig)
 	nodeInfo, err := client.GetNodeInfo()
 	if err != nil {
 		t.Error(err)
@@ -80,38 +67,6 @@ func TestGetUserList(t *testing.T) {
 	}
 
 	t.Log(userList)
-}
-
-func TestReportNodeStatus(t *testing.T) {
-	client := CreateClient()
-	nodeStatus := &api.NodeStatus{
-		1, 1, 1, 256,
-	}
-	err := client.ReportNodeStatus(nodeStatus)
-	if err != nil {
-		t.Error(err)
-	}
-}
-
-func TestReportReportNodeOnlineUsers(t *testing.T) {
-	client := CreateClient()
-	userList, err := client.GetUserList()
-	if err != nil {
-		t.Error(err)
-	}
-
-	onlineUserList := make([]api.OnlineUser, len(*userList))
-	for i, userInfo := range *userList {
-		onlineUserList[i] = api.OnlineUser{
-			UID: userInfo.UID,
-			IP:  fmt.Sprintf("1.1.1.%d", i),
-		}
-	}
-	//client.Debug()
-	err = client.ReportNodeOnlineUsers(&onlineUserList)
-	if err != nil {
-		t.Error(err)
-	}
 }
 
 func TestReportReportUserTraffic(t *testing.T) {
@@ -137,25 +92,11 @@ func TestReportReportUserTraffic(t *testing.T) {
 
 func TestGetNodeRule(t *testing.T) {
 	client := CreateClient()
-
+	client.Debug()
 	ruleList, err := client.GetNodeRule()
 	if err != nil {
 		t.Error(err)
 	}
 
 	t.Log(ruleList)
-}
-
-func TestReportIllegal(t *testing.T) {
-	client := CreateClient()
-
-	detectResult := []api.DetectResult{
-		api.DetectResult{1, 2},
-		api.DetectResult{1, 3},
-	}
-	client.Debug()
-	err := client.ReportIllegal(&detectResult)
-	if err != nil {
-		t.Error(err)
-	}
 }

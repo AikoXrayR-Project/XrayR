@@ -27,18 +27,17 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo, tag string) (*core.I
 
 	// Build Port
 	portList := &conf.PortList{
-		Range: []conf.PortRange{{From: uint32(nodeInfo.Port), To: uint32(nodeInfo.Port)}},
+		Range: []conf.PortRange{{From: nodeInfo.Port, To: nodeInfo.Port}},
 	}
 	inboundDetourConfig.PortList = portList
 	// Build Tag
 	inboundDetourConfig.Tag = tag
 	// SniffingConfig
 	sniffingConfig := &conf.SniffingConfig{
-		Enabled:      false,
+		Enabled:      true,
 		DestOverride: &conf.StringList{"http", "tls"},
 	}
 	if config.DisableSniffing {
-		//defalt OFF , If you want to Enable sniffing, please set DisableSniffing=False
 		sniffingConfig.Enabled = false
 	}
 	inboundDetourConfig.SniffingConfig = sniffingConfig
