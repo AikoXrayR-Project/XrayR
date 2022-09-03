@@ -13,7 +13,7 @@ import (
 	"github.com/AikoXrayR-Project/XrayR/api/proxypanel"
 	"github.com/AikoXrayR-Project/XrayR/api/sspanel"
 	"github.com/AikoXrayR-Project/XrayR/api/v2board"
-	"github.com/AikoXrayR-Project/XrayR/api/xflash"
+	"github.com/AikoXrayR-Project/XrayR/api/v2raysocks"
 	_ "github.com/AikoXrayR-Project/XrayR/main/distro/all"
 	"github.com/AikoXrayR-Project/XrayR/service"
 	"github.com/AikoXrayR-Project/XrayR/service/controller"
@@ -145,7 +145,7 @@ func (p *Panel) loadCore(panelConfig *Config) *core.Instance {
 	if err != nil {
 		log.Panicf("failed to create instance: %s", err)
 	}
-	log.Printf("Aiko Core Version: %s", core.Version())
+	log.Printf("Xray Core Version: %s", core.Version())
 
 	return server
 }
