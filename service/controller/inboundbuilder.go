@@ -1,4 +1,4 @@
-//Package generate the InbounderConfig used by add inbound
+// Package generate the InbounderConfig used by add inbound
 package controller
 
 import (
@@ -13,7 +13,7 @@ import (
 	"github.com/xtls/xray-core/infra/conf"
 )
 
-//InboundBuilder build Inbound config for different protocol
+// InboundBuilder build Inbound config for different protocol
 func InboundBuilder(config *Config, nodeInfo *api.NodeInfo, tag string) (*core.InboundHandlerConfig, error) {
 	inboundDetourConfig := &conf.InboundDetourConfig{}
 	// Build Listen IP address
