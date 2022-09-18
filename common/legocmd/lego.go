@@ -134,7 +134,7 @@ func (l *LegoCMD) HTTPCert(domain, email string) (CertPath string, KeyPath strin
 	return CertPath, KeyPath, nil
 }
 
-//RenewCert renew a domain cert
+// RenewCert renew a domain cert
 func (l *LegoCMD) RenewCert(domain, email, certMode, provider string, DNSEnv map[string]string) (CertPath string, KeyPath string, err error) {
 	var argstring string
 	defer func() (string, string, error) {
@@ -157,7 +157,7 @@ func (l *LegoCMD) RenewCert(domain, email, certMode, provider string, DNSEnv map
 	} else if certMode == "dns" {
 		// Set Env for DNS configuration
 		for key, value := range DNSEnv {
-			os.Setenv(key, value)
+			os.Setenv(strings.ToUpper(key), value)
 		}
 		argstring = fmt.Sprintf("lego -a -d %s -m %s --dns %s renew --days 30", domain, email, provider)
 	} else {
