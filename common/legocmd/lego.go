@@ -157,7 +157,8 @@ func (l *LegoCMD) RenewCert(domain, email, certMode, provider string, DNSEnv map
 	} else if certMode == "dns" {
 		// Set Env for DNS configuration
 		for key, value := range DNSEnv {
-			os.Setenv(strings.ToUpper(key), value)
+			x := strings.ToUpper
+			os.Setenv(x(key), value)
 		}
 		argstring = fmt.Sprintf("lego -a -d %s -m %s --dns %s renew --days 30", domain, email, provider)
 	} else {
