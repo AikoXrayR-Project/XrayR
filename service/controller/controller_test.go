@@ -22,9 +22,14 @@ func TestController(t *testing.T) {
 		LogConfig: &conf.LogConfig{LogLevel: "debug"},
 	}
 	policyConfig := &conf.PolicyConfig{}
-	policyConfig.Levels = map[uint32]*conf.Policy{0: &conf.Policy{
+	policyConfig.Levels = map[uint32]*conf.Policy{0: {
+		Handshake:         new(uint32),
+		ConnectionIdle:    new(uint32),
+		UplinkOnly:        new(uint32),
+		DownlinkOnly:      new(uint32),
 		StatsUserUplink:   true,
 		StatsUserDownlink: true,
+		BufferSize:        new(int32),
 	}}
 	serverConfig.Policy = policyConfig
 	config, _ := serverConfig.Build()
