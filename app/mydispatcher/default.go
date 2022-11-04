@@ -9,8 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AikoXrayR-Project/XrayR/common/limiter"
-	"github.com/AikoXrayR-Project/XrayR/common/rule"
 	"github.com/xtls/xray-core/common"
 	"github.com/xtls/xray-core/common/buf"
 	"github.com/xtls/xray-core/common/log"
@@ -26,6 +24,9 @@ import (
 	"github.com/xtls/xray-core/features/stats"
 	"github.com/xtls/xray-core/transport"
 	"github.com/xtls/xray-core/transport/pipe"
+
+	"github.com/AikoXrayR-Project/XrayR/common/limiter"
+	"github.com/AikoXrayR-Project/XrayR/common/rule"
 )
 
 var errSniffingTimeout = newError("timeout on sniffing")

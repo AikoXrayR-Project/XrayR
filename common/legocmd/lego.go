@@ -11,8 +11,9 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/AikoXrayR-Project/XrayR/common/legocmd/cmd"
 	"github.com/urfave/cli"
+
+	"github.com/AikoXrayR-Project/XrayR/common/legocmd/cmd"
 )
 
 var version = "dev"
@@ -79,7 +80,7 @@ func (l *LegoCMD) DNSCert(domain, email, provider string, DNSEnv map[string]stri
 	}()
 	// Set Env for DNS configuration
 	for key, value := range DNSEnv {
-		os.Setenv(key, value)
+		os.Setenv(strings.ToUpper(key), value)
 	}
 	// First check if the certificate exists
 	CertPath, KeyPath, err = checkCertfile(domain)
@@ -157,8 +158,7 @@ func (l *LegoCMD) RenewCert(domain, email, certMode, provider string, DNSEnv map
 	} else if certMode == "dns" {
 		// Set Env for DNS configuration
 		for key, value := range DNSEnv {
-			x := strings.ToUpper
-			os.Setenv(x(key), value)
+			os.Setenv(key, value)
 		}
 		argstring = fmt.Sprintf("lego -a -d %s -m %s --dns %s renew --days 30", domain, email, provider)
 	} else {

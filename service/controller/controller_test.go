@@ -8,12 +8,13 @@ import (
 	"syscall"
 	"testing"
 
+	"github.com/xtls/xray-core/core"
+	"github.com/xtls/xray-core/infra/conf"
+
 	"github.com/AikoXrayR-Project/XrayR/api"
 	"github.com/AikoXrayR-Project/XrayR/api/sspanel"
 	_ "github.com/AikoXrayR-Project/XrayR/main/distro/all"
 	. "github.com/AikoXrayR-Project/XrayR/service/controller"
-	"github.com/xtls/xray-core/core"
-	"github.com/xtls/xray-core/infra/conf"
 )
 
 func TestController(t *testing.T) {
@@ -22,14 +23,9 @@ func TestController(t *testing.T) {
 		LogConfig: &conf.LogConfig{LogLevel: "debug"},
 	}
 	policyConfig := &conf.PolicyConfig{}
-	policyConfig.Levels = map[uint32]*conf.Policy{0: {
-		Handshake:         new(uint32),
-		ConnectionIdle:    new(uint32),
-		UplinkOnly:        new(uint32),
-		DownlinkOnly:      new(uint32),
+	policyConfig.Levels = map[uint32]*conf.Policy{0: &conf.Policy{
 		StatsUserUplink:   true,
 		StatsUserDownlink: true,
-		BufferSize:        new(int32),
 	}}
 	serverConfig.Policy = policyConfig
 	config, _ := serverConfig.Build()
@@ -73,7 +69,7 @@ func TestController(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	//Explicitly triggering GC to remove garbage from config loading.
+	// Explicitly triggering GC to remove garbage from config loading.
 	runtime.GC()
 
 	{

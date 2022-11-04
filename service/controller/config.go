@@ -1,23 +1,28 @@
 package controller
 
+import (
+	"github.com/AikoXrayR-Project/XrayR/common/limiter"
+)
+
 type Config struct {
-	ListenIP                string                   `mapstructure:"ListenIP"`
-	SendIP                  string                   `mapstructure:"SendIP"`
-	UpdatePeriodic          int                      `mapstructure:"UpdatePeriodic"`
-	CertConfig              *CertConfig              `mapstructure:"CertConfig"`
-	EnableDNS               bool                     `mapstructure:"EnableDNS"`
-	DNSType                 string                   `mapstructure:"DNSType"`
-	DisableUploadTraffic    bool                     `mapstructure:"DisableUploadTraffic"`
-	DisableGetRule          bool                     `mapstructure:"DisableGetRule"`
-	EnableProxyProtocol     bool                     `mapstructure:"EnableProxyProtocol"`
-	EnableFallback          bool                     `mapstructure:"EnableFallback"`
-	DisableIVCheck          bool                     `mapstructure:"DisableIVCheck"`
-	DisableSniffing         bool                     `mapstructure:"DisableSniffing"`
-	FallBackConfigs         []*FallBackConfig        `mapstructure:"FallBackConfigs"`
-	DynamicSpeedLimitConfig *DynamicSpeedLimitConfig `mapstructure:"DynamiSpeedLimit"`
+	ListenIP             string                `mapstructure:"ListenIP"`
+	SendIP               string                `mapstructure:"SendIP"`
+	UpdatePeriodic       int                   `mapstructure:"UpdatePeriodic"`
+	CertConfig           *CertConfig           `mapstructure:"CertConfig"`
+	EnableDNS            bool                  `mapstructure:"EnableDNS"`
+	DNSType              string                `mapstructure:"DNSType"`
+	DisableUploadTraffic bool                  `mapstructure:"DisableUploadTraffic"`
+	DisableGetRule       bool                  `mapstructure:"DisableGetRule"`
+	EnableProxyProtocol  bool                  `mapstructure:"EnableProxyProtocol"`
+	EnableFallback       bool                  `mapstructure:"EnableFallback"`
+	DisableIVCheck       bool                  `mapstructure:"DisableIVCheck"`
+	DisableSniffing      bool                  `mapstructure:"DisableSniffing"`
+	AutoSpeedLimitConfig *AutoSpeedLimitConfig `mapstructure:"AutoSpeedLimitConfig"`
+	RedisConfig          *limiter.RedisConfig  `mapstructure:"RedisConfig"`
+	FallBackConfigs      []*FallBackConfig     `mapstructure:"FallBackConfigs"`
 }
 
-type DynamicSpeedLimitConfig struct {
+type AutoSpeedLimitConfig struct {
 	Limit         int `mapstructure:"Limit"` // mbps
 	WarnTimes     int `mapstructure:"WarnTimes"`
 	LimitSpeed    int `mapstructure:"LimitSpeed"`    // mbps

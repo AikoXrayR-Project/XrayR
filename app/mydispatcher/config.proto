@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package xrayr.app.mydispatcher;
 option csharp_namespace = "XrayR.App.Myispatcher";
-option go_package = "github.com/AikoAikoXrayR-Project/XrayR/app/mydispatcher";
+option go_package = "github.com/AikoXrayR-Project/XrayR/app/mydispatcher";
 option java_package = "com.xrayr.app.mydispatcher";
 option java_multiple_files = true;
 

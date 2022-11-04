@@ -8,6 +8,14 @@ import (
 
 	"github.com/AikoXrayR-Project/XrayR/app/mydispatcher"
 
+	"github.com/imdario/mergo"
+	"github.com/r3labs/diff/v2"
+	"github.com/xtls/xray-core/app/proxyman"
+	"github.com/xtls/xray-core/app/stats"
+	"github.com/xtls/xray-core/common/serial"
+	"github.com/xtls/xray-core/core"
+	"github.com/xtls/xray-core/infra/conf"
+
 	"github.com/AikoXrayR-Project/XrayR/api"
 	"github.com/AikoXrayR-Project/XrayR/api/pmpanel"
 	"github.com/AikoXrayR-Project/XrayR/api/proxypanel"
@@ -17,13 +25,6 @@ import (
 	_ "github.com/AikoXrayR-Project/XrayR/main/distro/all"
 	"github.com/AikoXrayR-Project/XrayR/service"
 	"github.com/AikoXrayR-Project/XrayR/service/controller"
-	"github.com/imdario/mergo"
-	"github.com/r3labs/diff/v2"
-	"github.com/xtls/xray-core/app/proxyman"
-	"github.com/xtls/xray-core/app/stats"
-	"github.com/xtls/xray-core/common/serial"
-	"github.com/xtls/xray-core/core"
-	"github.com/xtls/xray-core/infra/conf"
 )
 
 // Panel Structure
@@ -66,7 +67,7 @@ func (p *Panel) loadCore(panelConfig *Config) *core.Instance {
 	}
 	dnsConfig, err := coreDnsConfig.Build()
 	if err != nil {
-		log.Panicf("Failed to understand DNS config, for help: %s", err)
+		log.Panicf("Failed to understand DNS config, Please check: https://xtls.github.io/config/dns.html for help: %s", err)
 	}
 	// Routing config
 	coreRouterConfig := &conf.RouterConfig{}

@@ -9,11 +9,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/AikoXrayR-Project/XrayR/common/legocmd/log"
 	"github.com/go-acme/lego/v4/certcrypto"
 	"github.com/go-acme/lego/v4/lego"
 	"github.com/go-acme/lego/v4/registration"
 	"github.com/urfave/cli"
+
+	"github.com/AikoXrayR-Project/XrayR/common/legocmd/log"
 )
 
 const filePerm os.FileMode = 0o600
@@ -63,8 +64,7 @@ func newClient(ctx *cli.Context, acc registration.User, keyType certcrypto.KeyTy
 // getKeyType the type from which private keys should be generated.
 func getKeyType(ctx *cli.Context) certcrypto.KeyType {
 	keyType := ctx.GlobalString("key-type")
-	x := strings.ToUpper
-	switch x(keyType) {
+	switch strings.ToUpper(keyType) {
 	case "RSA2048":
 		return certcrypto.RSA2048
 	case "RSA4096":

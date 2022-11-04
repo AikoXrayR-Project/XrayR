@@ -1,8 +1,9 @@
 package cmd
 
 import (
-	"github.com/AikoXrayR-Project/XrayR/common/legocmd/log"
 	"github.com/urfave/cli"
+
+	"github.com/AikoXrayR-Project/XrayR/common/legocmd/log"
 )
 
 func Before(ctx *cli.Context) error {

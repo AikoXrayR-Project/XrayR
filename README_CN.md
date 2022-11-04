@@ -68,11 +68,11 @@ bash <(curl -Ls https://raw.githubusercontent.com/AikoXrayR-Project/AikoXrayR-in
 
 ### 使用Docker部署
 
-[Docker部署教程](https://crackair.gitbook.io/xrayr-project/xrayr-xia-zai-he-an-zhuang/install/docker)
+[Docker部署教程](https://crackair.gitbook.io/AikoXrayR-Project/XrayR-xia-zai-he-an-zhuang/install/docker)
 
 ### 手动安装
 
-[手动安装教程](https://crackair.gitbook.io/xrayr-project/xrayr-xia-zai-he-an-zhuang/install/manual)
+[手动安装教程](https://crackair.gitbook.io/AikoXrayR-Project/XrayR-xia-zai-he-an-zhuang/install/manual)
 
 ## 配置文件及详细使用教程
 
@@ -87,7 +87,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/AikoXrayR-Project/AikoXrayR-in
 
 ## Licence
 
-[Mozilla Public License Version 2.0](https://github.com/XrayR-project/XrayR/blob/master/LICENSE)
+[Mozilla Public License Version 2.0](https://github.com/AikoXrayR-Project/XrayR/blob/master/LICENSE)
 
 ## Telgram
 

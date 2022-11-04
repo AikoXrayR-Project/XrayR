@@ -5,12 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/AikoXrayR-Project/XrayR/api"
-	"github.com/AikoXrayR-Project/XrayR/common/legocmd"
 	"github.com/xtls/xray-core/common/net"
 	"github.com/xtls/xray-core/common/uuid"
 	"github.com/xtls/xray-core/core"
 	"github.com/xtls/xray-core/infra/conf"
+
+	"github.com/AikoXrayR-Project/XrayR/api"
+	"github.com/AikoXrayR-Project/XrayR/common/legocmd"
 )
 
 // InboundBuilder build Inbound config for different protocol
@@ -19,10 +20,10 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo, tag string) (*core.I
 	// Build Listen IP address
 	if nodeInfo.NodeType == "Shadowsocks-Plugin" {
 		// Shdowsocks listen in 127.0.0.1 for safety
-		inboundDetourConfig.ListenOn = &conf.Address{Address: net.ParseAddress("127.0.0.1")}
+		inboundDetourConfig.ListenOn = &conf.Address{net.ParseAddress("127.0.0.1")}
 	} else if config.ListenIP != "" {
 		ipAddress := net.ParseAddress(config.ListenIP)
-		inboundDetourConfig.ListenOn = &conf.Address{Address: ipAddress}
+		inboundDetourConfig.ListenOn = &conf.Address{ipAddress}
 	}
 
 	// Build Port

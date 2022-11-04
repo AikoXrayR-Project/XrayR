@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/AikoXrayR-Project/XrayR/api"
 	"github.com/xtls/xray-core/common/net"
 	"github.com/xtls/xray-core/core"
 	"github.com/xtls/xray-core/infra/conf"
+
+	"github.com/AikoXrayR-Project/XrayR/api"
 )
 
 // OutboundBuilder build freedom outbund config for addoutbound
@@ -19,7 +20,7 @@ func OutboundBuilder(config *Config, nodeInfo *api.NodeInfo, tag string) (*core.
 	// Build Send IP address
 	if config.SendIP != "" {
 		ipAddress := net.ParseAddress(config.SendIP)
-		outboundDetourConfig.SendThrough = &conf.Address{Address: ipAddress}
+		outboundDetourConfig.SendThrough = &conf.Address{ipAddress}
 	}
 
 	// Freedom Protocol setting

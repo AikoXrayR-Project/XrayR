@@ -2,12 +2,16 @@
 package limiter
 
 import (
+	"context"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
+	"github.com/go-redis/redis/v8"
+	"golang.org/x/time/rate"
+
 	"github.com/AikoXrayR-Project/XrayR/api"
-	"github.com/juju/ratelimit"
 )
 
 type UserInfo struct {
@@ -20,12 +24,17 @@ type InboundInfo struct {
 	Tag            string
 	NodeSpeedLimit uint64
 	UserInfo       *sync.Map // Key: Email value: UserInfo
-	BucketHub      *sync.Map // key: Email, value: *ratelimit.Bucket
+	BucketHub      *sync.Map // key: Email, value: *rate.Limiter
 	UserOnlineIP   *sync.Map // Key: Email Value: *sync.Map: Key: IP, Value: UID
 }
 
 type Limiter struct {
 	InboundInfo *sync.Map // Key: Tag, Value: *InboundInfo
+	r           *redis.Client
+	g           struct {
+		limit  int
+		expiry int
+	}
 }
 
 func New() *Limiter {
@@ -34,7 +43,18 @@ func New() *Limiter {
 	}
 }
 
-func (l *Limiter) AddInboundLimiter(tag string, nodeSpeedLimit uint64, userList *[]api.UserInfo) error {
+func (l *Limiter) AddInboundLimiter(tag string, nodeSpeedLimit uint64, userList *[]api.UserInfo, Redis *RedisConfig) error {
+	// global limit
+	if Redis.Limit > 0 {
+		l.r = redis.NewClient(&redis.Options{
+			Addr:     Redis.RedisAddr,
+			Password: Redis.RedisPassword,
+			DB:       Redis.RedisDB,
+		})
+		l.g.limit = Redis.Limit
+		l.g.expiry = Redis.Expiry
+	}
+
 	inboundInfo := &InboundInfo{
 		Tag:            tag,
 		NodeSpeedLimit: nodeSpeedLimit,
@@ -65,7 +85,17 @@ func (l *Limiter) UpdateInboundLimiter(tag string, updatedUserList *[]api.UserIn
 				SpeedLimit:  u.SpeedLimit,
 				DeviceLimit: u.DeviceLimit,
 			})
-			inboundInfo.BucketHub.Delete(fmt.Sprintf("%s|%s|%d", tag, u.Email, u.UID)) // Delete old limiter bucket
+			// Update old limiter bucket
+			limit := determineRate(inboundInfo.NodeSpeedLimit, u.SpeedLimit)
+			if limit > 0 {
+				if bucket, ok := inboundInfo.BucketHub.Load(fmt.Sprintf("%s|%s|%d", tag, u.Email, u.UID)); ok {
+					limiter := bucket.(*rate.Limiter)
+					limiter.SetLimit(rate.Limit(limit))
+					limiter.SetBurst(int(limit))
+				}
+			} else {
+				inboundInfo.BucketHub.Delete(fmt.Sprintf("%s|%s|%d", tag, u.Email, u.UID))
+			}
 		}
 	} else {
 		return fmt.Errorf("no such inbound in limiter: %s", tag)
@@ -108,20 +138,46 @@ func (l *Limiter) GetOnlineDevice(tag string) (*[]api.OnlineUser, error) {
 	return &onlineUser, nil
 }
 
-func (l *Limiter) GetUserBucket(tag string, email string, ip string) (limiter *ratelimit.Bucket, SpeedLimit bool, Reject bool) {
+func (l *Limiter) GetUserBucket(tag string, email string, ip string) (limiter *rate.Limiter, SpeedLimit bool, Reject bool) {
 	if value, ok := l.InboundInfo.Load(tag); ok {
 		inboundInfo := value.(*InboundInfo)
 		nodeLimit := inboundInfo.NodeSpeedLimit
-		var userLimit uint64 = 0
-		var deviceLimit int = 0
-		var uid int = 0
+		var (
+			userLimit        uint64 = 0
+			deviceLimit, uid int
+		)
+
 		if v, ok := inboundInfo.UserInfo.Load(email); ok {
 			u := v.(UserInfo)
 			uid = u.UID
 			userLimit = u.SpeedLimit
 			deviceLimit = u.DeviceLimit
 		}
-		// Report online device
+
+		// Global device limit
+		if l.g.limit > 0 {
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+			defer cancel()
+
+			trimEmail := strings.Split(email, "|")[1]
+			exist, err := l.r.Exists(ctx, trimEmail).Result()
+			if err != nil {
+				newError(fmt.Sprintf("Redis: %v", err)).AtError().WriteToLog()
+			} else {
+				if exist == 0 {
+					l.r.HSet(ctx, trimEmail, ip, uid)
+					l.r.Expire(ctx, trimEmail, time.Duration(l.g.expiry)*time.Minute)
+				} else {
+					l.r.HSet(ctx, trimEmail, ip, uid)
+				}
+				if l.r.HLen(ctx, trimEmail).Val() > int64(l.g.limit) {
+					l.r.HDel(ctx, trimEmail, ip)
+					return nil, false, true
+				}
+			}
+		}
+
+		// Local device limit
 		ipMap := new(sync.Map)
 		ipMap.Store(ip, uid)
 		// If any device is online
@@ -142,9 +198,9 @@ func (l *Limiter) GetUserBucket(tag string, email string, ip string) (limiter *r
 		}
 		limit := determineRate(nodeLimit, userLimit) // If need the Speed limit
 		if limit > 0 {
-			limiter := ratelimit.NewBucketWithQuantum(time.Duration(int64(time.Second)), int64(limit), int64(limit)) // Byte/s
+			limiter := rate.NewLimiter(rate.Limit(limit), int(limit)) // Byte/s
 			if v, ok := inboundInfo.BucketHub.LoadOrStore(email, limiter); ok {
-				bucket := v.(*ratelimit.Bucket)
+				bucket := v.(*rate.Limiter)
 				return bucket, true, false
 			} else {
 				return limiter, true, false

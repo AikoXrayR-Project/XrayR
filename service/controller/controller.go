@@ -6,10 +6,6 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/AikoXrayR-Project/XrayR/api"
-	"github.com/AikoXrayR-Project/XrayR/app/mydispatcher"
-	"github.com/AikoXrayR-Project/XrayR/common/legocmd"
-	"github.com/AikoXrayR-Project/XrayR/common/serverstatus"
 	"github.com/xtls/xray-core/common/protocol"
 	"github.com/xtls/xray-core/common/task"
 	"github.com/xtls/xray-core/core"
@@ -17,11 +13,18 @@ import (
 	"github.com/xtls/xray-core/features/outbound"
 	"github.com/xtls/xray-core/features/routing"
 	"github.com/xtls/xray-core/features/stats"
+
+	"github.com/AikoXrayR-Project/XrayR/api"
+	"github.com/AikoXrayR-Project/XrayR/app/mydispatcher"
+	"github.com/AikoXrayR-Project/XrayR/common/legocmd"
+	"github.com/AikoXrayR-Project/XrayR/common/limiter"
+	"github.com/AikoXrayR-Project/XrayR/common/serverstatus"
 )
 
 type LimitInfo struct {
-	end              int64
-	originSpeedLimit uint64
+	end               int64
+	currentSpeedLimit int
+	originSpeedLimit  uint64
 }
 
 type Controller struct {
@@ -84,11 +87,15 @@ func (c *Controller) Start() error {
 	if err != nil {
 		return err
 	}
-	//sync controller userList
+	// sync controller userList
 	c.userList = userInfo
 
+	// Init global device limit
+	if c.config.RedisConfig == nil {
+		c.config.RedisConfig = &limiter.RedisConfig{Limit: 0}
+	}
 	// Add Limiter
-	if err := c.AddInboundLimiter(c.Tag, newNodeInfo.SpeedLimit, userInfo); err != nil {
+	if err := c.AddInboundLimiter(c.Tag, newNodeInfo.SpeedLimit, userInfo, c.config.RedisConfig); err != nil {
 		log.Print(err)
 	}
 	// Add Rule Manager
@@ -109,11 +116,10 @@ func (c *Controller) Start() error {
 		Interval: time.Duration(c.config.UpdatePeriodic) * time.Second,
 		Execute:  c.userInfoMonitor,
 	}
-	if c.config.DynamicSpeedLimitConfig == nil {
-		c.config.DynamicSpeedLimitConfig = &DynamicSpeedLimitConfig{0, 0, 0, 0}
+	if c.config.AutoSpeedLimitConfig == nil {
+		c.config.AutoSpeedLimitConfig = &AutoSpeedLimitConfig{0, 0, 0, 0}
 	}
-
-	if c.config.DynamicSpeedLimitConfig.Limit > 0 {
+	if c.config.AutoSpeedLimitConfig.Limit > 0 {
 		c.limitedUsers = make(map[api.UserInfo]LimitInfo)
 		c.warnedUsers = make(map[api.UserInfo]int)
 	}
@@ -230,7 +236,7 @@ func (c *Controller) nodeInfoMonitor() (err error) {
 			return nil
 		}
 		// Add Limiter
-		if err := c.AddInboundLimiter(c.Tag, newNodeInfo.SpeedLimit, newUserInfo); err != nil {
+		if err := c.AddInboundLimiter(c.Tag, newNodeInfo.SpeedLimit, newUserInfo, c.config.RedisConfig); err != nil {
 			log.Print(err)
 			return nil
 		}
@@ -387,31 +393,31 @@ func (c *Controller) addNewUser(userInfo *[]api.UserInfo, nodeInfo *api.NodeInfo
 }
 
 func compareUserList(old, new *[]api.UserInfo) (deleted, added []api.UserInfo) {
-	msrc := make(map[api.UserInfo]byte) //按源数组建索引
-	mall := make(map[api.UserInfo]byte) //源+目所有元素建索引
+	msrc := make(map[api.UserInfo]byte) // 按源数组建索引
+	mall := make(map[api.UserInfo]byte) // 源+目所有元素建索引
 
-	var set []api.UserInfo //交集
+	var set []api.UserInfo // 交集
 
-	//1.源数组建立map
+	// 1.源数组建立map
 	for _, v := range *old {
 		msrc[v] = 0
 		mall[v] = 0
 	}
-	//2.目数组中，存不进去，即重复元素，所有存不进去的集合就是并集
+	// 2.目数组中，存不进去，即重复元素，所有存不进去的集合就是并集
 	for _, v := range *new {
 		l := len(mall)
 		mall[v] = 1
-		if l != len(mall) { //长度变化，即可以存
+		if l != len(mall) { // 长度变化，即可以存
 			l = len(mall)
-		} else { //存不了，进并集
+		} else { // 存不了，进并集
 			set = append(set, v)
 		}
 	}
-	//3.遍历交集，在并集中找，找到就从并集中删，删完后就是补集（即并-交=所有变化的元素）
+	// 3.遍历交集，在并集中找，找到就从并集中删，删完后就是补集（即并-交=所有变化的元素）
 	for _, v := range set {
 		delete(mall, v)
 	}
-	//4.此时，mall是补集，所有元素去源中找，找到就是删除的，找不到的必定能在目数组中找到，即新加的
+	// 4.此时，mall是补集，所有元素去源中找，找到就是删除的，找不到的必定能在目数组中找到，即新加的
 	for v := range mall {
 		_, exist := msrc[v]
 		if exist {
@@ -426,11 +432,12 @@ func compareUserList(old, new *[]api.UserInfo) (deleted, added []api.UserInfo) {
 
 func limitUser(c *Controller, user api.UserInfo, silentUsers *[]api.UserInfo) {
 	c.limitedUsers[user] = LimitInfo{
-		end:              time.Now().Unix() + int64(c.config.DynamicSpeedLimitConfig.LimitDuration*60),
-		originSpeedLimit: user.SpeedLimit,
+		end:               time.Now().Unix() + int64(c.config.AutoSpeedLimitConfig.LimitDuration*60),
+		currentSpeedLimit: c.config.AutoSpeedLimitConfig.LimitSpeed,
+		originSpeedLimit:  user.SpeedLimit,
 	}
-	log.Printf("    User: %s Speed: %d End: %s", user.Email, user.SpeedLimit, time.Unix(c.limitedUsers[user].end, 0).Format("01-02 15:04:05"))
-	user.SpeedLimit = uint64(c.config.DynamicSpeedLimitConfig.LimitSpeed) * 1024 * 1024 / 8
+	log.Printf("Limit User: %s Speed: %d End: %s", c.buildUserTag(&user), c.config.AutoSpeedLimitConfig.LimitSpeed, time.Unix(c.limitedUsers[user].end, 0).Format("01-02 15:04:05"))
+	user.SpeedLimit = uint64((c.config.AutoSpeedLimitConfig.LimitSpeed * 1000000) / 8)
 	*silentUsers = append(*silentUsers, user)
 }
 
@@ -450,19 +457,18 @@ func (c *Controller) userInfoMonitor() (err error) {
 	if err != nil {
 		log.Print(err)
 	}
-
 	// Unlock users
-	if c.config.DynamicSpeedLimitConfig.Limit > 0 && len(c.limitedUsers) > 0 {
+	if c.config.AutoSpeedLimitConfig.Limit > 0 && len(c.limitedUsers) > 0 {
 		log.Printf("Limited users:")
 		toReleaseUsers := make([]api.UserInfo, 0)
 		for user, limitInfo := range c.limitedUsers {
 			if time.Now().Unix() > limitInfo.end {
 				user.SpeedLimit = limitInfo.originSpeedLimit
 				toReleaseUsers = append(toReleaseUsers, user)
-				log.Printf("    User: %s Speed: %d End: nil (Unlimit)", user.Email, user.SpeedLimit)
+				log.Printf("User: %s Speed: %d End: nil (Unlimit)", c.buildUserTag(&user), user.SpeedLimit)
 				delete(c.limitedUsers, user)
 			} else {
-				log.Printf("    User: %s Speed: %d End: %s", user.Email, user.SpeedLimit, time.Unix(c.limitedUsers[user].end, 0).Format("01-02 15:04:05"))
+				log.Printf("User: %s Speed: %d End: %s", c.buildUserTag(&user), limitInfo.currentSpeedLimit, time.Unix(c.limitedUsers[user].end, 0).Format("01-02 15:04:05"))
 			}
 		}
 		if len(toReleaseUsers) > 0 {
@@ -476,20 +482,21 @@ func (c *Controller) userInfoMonitor() (err error) {
 	var userTraffic []api.UserTraffic
 	var upCounterList []stats.Counter
 	var downCounterList []stats.Counter
-	DynamicSpeedLimit := int64(c.config.DynamicSpeedLimitConfig.Limit)
+	AutoSpeedLimit := int64(c.config.AutoSpeedLimitConfig.Limit)
 	UpdatePeriodic := int64(c.config.UpdatePeriodic)
 	limitedUsers := make([]api.UserInfo, 0)
 	for _, user := range *c.userList {
 		up, down, upCounter, downCounter := c.getTraffic(c.buildUserTag(&user))
 		if up > 0 || down > 0 {
-			if DynamicSpeedLimit > 0 {
-				if down > DynamicSpeedLimit*1024*1024*UpdatePeriodic/8 {
+			// Over speed users
+			if AutoSpeedLimit > 0 {
+				if down > AutoSpeedLimit*1000000*UpdatePeriodic/8 || up > AutoSpeedLimit*1000000*UpdatePeriodic/8 {
 					if _, ok := c.limitedUsers[user]; !ok {
-						if c.config.DynamicSpeedLimitConfig.WarnTimes == 0 {
+						if c.config.AutoSpeedLimitConfig.WarnTimes == 0 {
 							limitUser(c, user, &limitedUsers)
 						} else {
 							c.warnedUsers[user] += 1
-							if c.warnedUsers[user] > c.config.DynamicSpeedLimitConfig.WarnTimes {
+							if c.warnedUsers[user] > c.config.AutoSpeedLimitConfig.WarnTimes {
 								limitUser(c, user, &limitedUsers)
 								delete(c.warnedUsers, user)
 							}
