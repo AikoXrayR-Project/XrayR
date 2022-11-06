@@ -10,8 +10,8 @@ RUN go build -v -o XrayR -trimpath -ldflags "-s -w -buildid=" ./main
 FROM  alpine
 # 安装必要的工具包
 RUN  apk --update --no-cache add tzdata ca-certificates \
-    && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+    && cp /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime
 RUN mkdir /etc/XrayR/
 COPY --from=builder /app/XrayR /usr/local/bin
 
-ENTRYPOINT [ "XrayR", "--config", "/etc/XrayR/config.yml"]
+ENTRYPOINT [ "XrayR", "--config", "/etc/XrayR/aiko.yml"]
