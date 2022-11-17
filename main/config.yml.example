@@ -32,6 +32,7 @@ Nodes:
       EnableDNS: false # Use custom DNS config, Please ensure that you set the dns.json well
       DNSType: AsIs # AsIs, UseIP, UseIPv4, UseIPv6, DNS strategy
       EnableProxyProtocol: false # Only works for WebSocket and TCP
+      EnableFallback: false # Only support for Trojan and Vless
       DynamicSpeedLimitConfig:
          Limit: 0 # Warned speed. Set to 0 to disable DynamicSpeedLimit (mbps)
          WarnTimes: 0 # After (WarnTimes) consecutive warnings, the user will be limited. Set to 0 to punish overspeed user immediately.
