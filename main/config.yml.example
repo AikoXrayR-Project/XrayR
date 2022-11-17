@@ -38,6 +38,7 @@ Nodes:
          WarnTimes: 0 # After (WarnTimes) consecutive warnings, the user will be limited. Set to 0 to punish overspeed user immediately.
          LimitSpeed: 0 # The speedlimit of a limited user (unit: mbps)
          LimitDuration: 0 # How many minutes will the limiting last (unit: minute)
+      EnableFallback: false # Only support for Trojan and Vless
       FallBackConfigs:  # Support multiple fallbacks
         -
           SNI: # TLS SNI(Server Name Indication), Empty for any
