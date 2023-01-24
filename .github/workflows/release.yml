@@ -3,8 +3,8 @@ name: Build and Release
 on:
   workflow_dispatch:
   push:
-    branches:
-      - master
+    tags:
+      - 'v*'
     paths:
       - "**/*.go"
       - "go.mod"
@@ -26,7 +26,7 @@ jobs:
     strategy:
       matrix:
         # Include amd64 on all platforms.
-        goos: [windows, freebsd, openbsd, linux, dragonfly, darwin]
+        goos: [windows, freebsd, linux, openbsd, dragonfly, darwin]
         goarch: [amd64, 386]
         exclude:
           # Exclude i386 on darwin and dragonfly.
@@ -79,9 +79,13 @@ jobs:
           - goos: linux
             goarch: mips
           # END MIPS
+          # BEGIN OPENBSD ARM
+          - goos: openbsd
+            goarch: arm64
+          # END OPENBSD ARM
           # BEGIN PPC
-          # - goos: linux # Removed due to the unsupport of shirou/gopsutil 
-          #   goarch: ppc64
+          #- goos: linux
+          #  goarch: ppc64
           - goos: linux
             goarch: ppc64le
           # END PPC
@@ -96,7 +100,6 @@ jobs:
           - goos: linux
             goarch: s390x
           # END S390X
-          # END Other architectures
       fail-fast: false
       
     runs-on: ubuntu-latest
@@ -107,7 +110,7 @@ jobs:
       CGO_ENABLED: 0
     steps:
       - name: Checkout codebase
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
       - name: Show workflow information 
         id: get_filename
         run: |
@@ -119,49 +122,57 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: ^1.18
+          go-version: 1.19
 
       - name: Get project dependencies
         run: go mod download
 
 
-      - name: Build XrayR
+      - name: Build AikoXrayR
         run: |
           mkdir -p build_assets
-          go build -v -o build_assets/XrayR -trimpath -ldflags "-s -w -buildid=" ./main
+          go build -v -o build_assets/AikoXrayR -trimpath -ldflags "-s -w -buildid=" ./AikoXrayR
     
-      - name: Build Mips softfloat XrayR
+      - name: Build Mips softfloat AikoXrayR
         if: matrix.goarch == 'mips' || matrix.goarch == 'mipsle'
         run: |
-          GOMIPS=softfloat go build -v -o build_assets/XrayR_softfloat -trimpath -ldflags "-s -w -buildid=" ./main
-      - name: Rename Windows XrayR
+          GOMIPS=softfloat go build -v -o build_assets/AikoXrayR_softfloat -trimpath -ldflags "-s -w -buildid=" ./AikoXrayR
+      - name: Rename Windows AikoXrayR
         if: matrix.goos == 'windows'
         run: |
           cd ./build_assets || exit 1
-          mv XrayR XrayR.exe
+          mv AikoXrayR AikoXrayR.exe
 
       - name: Prepare to release
-        run: |
-          cp ${GITHUB_WORKSPACE}/README.md ./build_assets/README.md
-          cp ${GITHUB_WORKSPACE}/LICENSE ./build_assets/LICENSE
-          cp ${GITHUB_WORKSPACE}/main/dns.json ./build_assets/dns.json
-          cp ${GITHUB_WORKSPACE}/main/route.json ./build_assets/route.json
-          cp ${GITHUB_WORKSPACE}/main/custom_outbound.json ./build_assets/custom_outbound.json
-          cp ${GITHUB_WORKSPACE}/main/custom_inbound.json ./build_assets/custom_inbound.json
-          cp ${GITHUB_WORKSPACE}/main/rulelist ./build_assets/AikoBlock
-          cp ${GITHUB_WORKSPACE}/main/config.yml.example ./build_assets/aiko.yml
-          LIST=('geoip geoip geoip' 'domain-list-community dlc geosite')
-          for i in "${LIST[@]}"
-          do
-            INFO=($(echo $i | awk 'BEGIN{FS=" ";OFS=" "} {print $1,$2,$3}'))
-            LASTEST_TAG="$(curl -sL "https://api.github.com/repos/v2fly/${INFO[0]}/releases" | jq -r ".[0].tag_name" || echo "latest")"
-            FILE_NAME="${INFO[2]}.dat"
-            echo -e "Downloading ${FILE_NAME}..."
-            curl -L "https://github.com/v2fly/${INFO[0]}/releases/download/${LASTEST_TAG}/${INFO[1]}.dat" -o ./build_assets/${FILE_NAME}
-            echo -e "Verifying HASH key..."
-            HASH="$(curl -sL "https://github.com/v2fly/${INFO[0]}/releases/download/${LASTEST_TAG}/${INFO[1]}.dat.sha256sum" | awk -F ' ' '{print $1}')"
-            [ "$(sha256sum "./build_assets/${FILE_NAME}" | awk -F ' ' '{print $1}')" == "${HASH}" ] || { echo -e "The HASH key of ${FILE_NAME} does not match cloud one."; exit 1; }
-          done
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 60
+          retry_wait_seconds: 60
+          max_attempts: 5
+          command: |
+            cp ${GITHUB_WORKSPACE}/README.md ./build_assets/README.md
+            cp ${GITHUB_WORKSPACE}/LICENSE ./build_assets/LICENSE
+            cp ${GITHUB_WORKSPACE}/AikoXrayR/dns.json ./build_assets/dns.json
+            cp ${GITHUB_WORKSPACE}/AikoXrayR/route.json ./build_assets/route.json
+            cp ${GITHUB_WORKSPACE}/AikoXrayR/custom_outbound.json ./build_assets/custom_outbound.json
+            cp ${GITHUB_WORKSPACE}/AikoXrayR/custom_inbound.json ./build_assets/custom_inbound.json
+            cp ${GITHUB_WORKSPACE}/AikoXrayR/AikoBlock ./build_assets/AikoBlock
+            cp ${GITHUB_WORKSPACE}/AikoXrayR/acces.log.example ./build_assets/acces.log
+            cp ${GITHUB_WORKSPACE}/AikoXrayR/error.log.example ./build_assets/error.log
+            cp ${GITHUB_WORKSPACE}/AikoXrayR/aiko.yml.example ./build_assets/aiko.yml
+            LIST=('geoip geoip geoip' 'domain-list-community dlc geosite')
+            for i in "${LIST[@]}"
+            do
+              INFO=($(echo $i | awk 'BEGIN{FS=" ";OFS=" "} {print $1,$2,$3}'))
+              DOWNLOAD_URL="https://raw.githubusercontent.com/v2fly/${INFO[0]}/release/${INFO[1]}.dat"
+              FILE_NAME="${INFO[2]}.dat"
+              echo -e "Downloading ${DOWNLOAD_URL}..."
+              curl -L "${DOWNLOAD_URL}" -o ./build_assets/${FILE_NAME}
+              echo -e "Verifying HASH key..."
+              HASH="$(curl -sL "${DOWNLOAD_URL}.sha256sum" | awk -F ' ' '{print $1}')"
+              [ "$(sha256sum "./build_assets/${FILE_NAME}" | awk -F ' ' '{print $1}')" == "${HASH}" ] || { echo -e "The HASH key of ${FILE_NAME} does not match cloud one."; exit 1; }
+            done
+            
       - name: Create ZIP archive
         shell: bash
         run: |
