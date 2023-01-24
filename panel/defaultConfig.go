@@ -26,5 +26,6 @@ func getDefaultControllerConfig() *controller.Config {
 		SendIP:         "0.0.0.0",
 		UpdatePeriodic: 60,
 		DNSType:        "AsIs",
+		DisableSniffing: true,
 	}
 }
