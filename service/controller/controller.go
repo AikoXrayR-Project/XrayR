@@ -112,10 +112,10 @@ func (c *Controller) Start() error {
 		Interval: time.Duration(c.config.UpdatePeriodic) * time.Second,
 		Execute:  c.userInfoMonitor,
 	}
-	if c.config.AutoSpeedLimitConfig == nil {
-		c.config.AutoSpeedLimitConfig = &AutoSpeedLimitConfig{0, 0, 0, 0}
+	if c.config.DynamicSpeedLimitConfig == nil {
+		c.config.DynamicSpeedLimitConfig = &DynamicSpeedLimitConfig{0, 0, 0, 0}
 	}
-	if c.config.AutoSpeedLimitConfig.Limit > 0 {
+	if c.config.DynamicSpeedLimitConfig.Limit > 0 {
 		c.limitedUsers = make(map[api.UserInfo]LimitInfo)
 		c.warnedUsers = make(map[api.UserInfo]int)
 	}
@@ -428,12 +428,12 @@ func compareUserList(old, new *[]api.UserInfo) (deleted, added []api.UserInfo) {
 
 func limitUser(c *Controller, user api.UserInfo, silentUsers *[]api.UserInfo) {
 	c.limitedUsers[user] = LimitInfo{
-		end:               time.Now().Unix() + int64(c.config.AutoSpeedLimitConfig.LimitDuration*60),
-		currentSpeedLimit: c.config.AutoSpeedLimitConfig.LimitSpeed,
+		end:               time.Now().Unix() + int64(c.config.DynamicSpeedLimitConfig.LimitDuration*60),
+		currentSpeedLimit: c.config.DynamicSpeedLimitConfig.LimitSpeed,
 		originSpeedLimit:  user.SpeedLimit,
 	}
-	log.Printf("Limit User: %s Speed: %d End: %s", c.buildUserTag(&user), c.config.AutoSpeedLimitConfig.LimitSpeed, time.Unix(c.limitedUsers[user].end, 0).Format("01-02 15:04:05"))
-	user.SpeedLimit = uint64((c.config.AutoSpeedLimitConfig.LimitSpeed * 1000000) / 8)
+	log.Printf("Limit User: %s Speed: %d End: %s", c.buildUserTag(&user), c.config.DynamicSpeedLimitConfig.LimitSpeed, time.Unix(c.limitedUsers[user].end, 0).Format("01-02 15:04:05"))
+	user.SpeedLimit = uint64((c.config.DynamicSpeedLimitConfig.LimitSpeed * 1000000) / 8)
 	*silentUsers = append(*silentUsers, user)
 }
 
@@ -454,7 +454,7 @@ func (c *Controller) userInfoMonitor() (err error) {
 		log.Print(err)
 	}
 	// Unlock users
-	if c.config.AutoSpeedLimitConfig.Limit > 0 && len(c.limitedUsers) > 0 {
+	if c.config.DynamicSpeedLimitConfig.Limit > 0 && len(c.limitedUsers) > 0 {
 		log.Printf("Limited users:")
 		toReleaseUsers := make([]api.UserInfo, 0)
 		for user, limitInfo := range c.limitedUsers {
@@ -478,7 +478,7 @@ func (c *Controller) userInfoMonitor() (err error) {
 	var userTraffic []api.UserTraffic
 	var upCounterList []stats.Counter
 	var downCounterList []stats.Counter
-	AutoSpeedLimit := int64(c.config.AutoSpeedLimitConfig.Limit)
+	AutoSpeedLimit := int64(c.config.DynamicSpeedLimitConfig.Limit)
 	UpdatePeriodic := int64(c.config.UpdatePeriodic)
 	limitedUsers := make([]api.UserInfo, 0)
 	for _, user := range *c.userList {
@@ -488,11 +488,11 @@ func (c *Controller) userInfoMonitor() (err error) {
 			if AutoSpeedLimit > 0 {
 				if down > AutoSpeedLimit*1000000*UpdatePeriodic/8 || up > AutoSpeedLimit*1000000*UpdatePeriodic/8 {
 					if _, ok := c.limitedUsers[user]; !ok {
-						if c.config.AutoSpeedLimitConfig.WarnTimes == 0 {
+						if c.config.DynamicSpeedLimitConfig.WarnTimes == 0 {
 							limitUser(c, user, &limitedUsers)
 						} else {
 							c.warnedUsers[user] += 1
-							if c.warnedUsers[user] > c.config.AutoSpeedLimitConfig.WarnTimes {
+							if c.warnedUsers[user] > c.config.DynamicSpeedLimitConfig.WarnTimes {
 								limitUser(c, user, &limitedUsers)
 								delete(c.warnedUsers, user)
 							}
