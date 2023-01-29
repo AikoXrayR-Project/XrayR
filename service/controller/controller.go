@@ -17,7 +17,6 @@ import (
 	"github.com/AikoXrayR-Project/XrayR/api"
 	"github.com/AikoXrayR-Project/XrayR/app/mydispatcher"
 	"github.com/AikoXrayR-Project/XrayR/common/legocmd"
-	"github.com/AikoXrayR-Project/XrayR/common/limiter"
 	"github.com/AikoXrayR-Project/XrayR/common/serverstatus"
 )
 
@@ -87,17 +86,14 @@ func (c *Controller) Start() error {
 	if err != nil {
 		return err
 	}
-	// sync controller userList
-	c.userList = userInfo
 
-	// Init global device limit
-	if c.config.RedisConfig == nil {
-		c.config.RedisConfig = &limiter.RedisConfig{Limit: 0}
-	}
-	// Add Limiter
 	if err := c.AddInboundLimiter(c.Tag, newNodeInfo.SpeedLimit, userInfo, c.config.RedisConfig); err != nil {
 		log.Print(err)
 	}
+
+	// sync controller userList
+	c.userList = userInfo
+
 	// Add Rule Manager
 	if !c.config.DisableGetRule {
 		if ruleList, err := c.apiClient.GetNodeRule(); err != nil {

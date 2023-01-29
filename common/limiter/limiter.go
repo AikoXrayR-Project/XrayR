@@ -1,14 +1,21 @@
-// Package limiter is to control the links that go into the dispather
+// Package limiter is to control the links that go into the dispatcher
 package limiter
 
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/eko/gocache/lib/v4/cache"
+	"github.com/eko/gocache/lib/v4/marshaler"
+	"github.com/eko/gocache/lib/v4/store"
+	goCacheStore "github.com/eko/gocache/store/go_cache/v4"
+	redisStore "github.com/eko/gocache/store/redis/v4"
 	"github.com/go-redis/redis/v8"
+	goCache "github.com/patrickmn/go-cache"
 	"golang.org/x/time/rate"
 
 	"github.com/AikoXrayR-Project/XrayR/api"
@@ -25,16 +32,15 @@ type InboundInfo struct {
 	NodeSpeedLimit uint64
 	UserInfo       *sync.Map // Key: Email value: UserInfo
 	BucketHub      *sync.Map // key: Email, value: *rate.Limiter
-	UserOnlineIP   *sync.Map // Key: Email Value: *sync.Map: Key: IP, Value: UID
+	UserOnlineIP   *sync.Map // Key: Email, value: {Key: IP, value: UID}
+	GlobalLimit    struct {
+		config         *RedisConfig
+		globalOnlineIP *marshaler.Marshaler
+	}
 }
 
 type Limiter struct {
 	InboundInfo *sync.Map // Key: Tag, Value: *InboundInfo
-	r           *redis.Client
-	g           struct {
-		limit  int
-		expiry int
-	}
 }
 
 func New() *Limiter {
@@ -43,24 +49,37 @@ func New() *Limiter {
 	}
 }
 
-func (l *Limiter) AddInboundLimiter(tag string, nodeSpeedLimit uint64, userList *[]api.UserInfo, Redis *RedisConfig) error {
-	// global limit
-	if Redis.Limit > 0 {
-		l.r = redis.NewClient(&redis.Options{
-			Addr:     Redis.RedisAddr,
-			Password: Redis.RedisPassword,
-			DB:       Redis.RedisDB,
-		})
-		l.g.limit = Redis.Limit
-		l.g.expiry = Redis.Expiry
-	}
-
+func (l *Limiter) AddInboundLimiter(tag string, nodeSpeedLimit uint64, userList *[]api.UserInfo, globalLimit *RedisConfig) error {
 	inboundInfo := &InboundInfo{
 		Tag:            tag,
 		NodeSpeedLimit: nodeSpeedLimit,
 		BucketHub:      new(sync.Map),
 		UserOnlineIP:   new(sync.Map),
 	}
+
+	if globalLimit != nil && globalLimit.Enable {
+		inboundInfo.GlobalLimit.config = globalLimit
+
+		// init local store
+		gs := goCacheStore.NewGoCache(goCache.New(time.Duration(globalLimit.Expiry)*time.Second, 1*time.Minute))
+
+		// init redis store
+		rs := redisStore.NewRedis(redis.NewClient(
+			&redis.Options{
+				Addr:     globalLimit.RedisAddr,
+				Password: globalLimit.RedisPassword,
+				DB:       globalLimit.RedisDB,
+			}),
+			store.WithExpiration(time.Duration(globalLimit.Expiry)*time.Second))
+
+		// init chained cache. First use local go-cache, if go-cache is nil, then use redis cache
+		cacheManager := cache.NewChain[any](
+			cache.New[any](gs), // go-cache is priority
+			cache.New[any](rs),
+		)
+		inboundInfo.GlobalLimit.globalOnlineIP = marshaler.New(cacheManager)
+	}
+
 	userMap := new(sync.Map)
 	for _, u := range *userList {
 		userMap.Store(fmt.Sprintf("%s|%s|%d", tag, u.Email, u.UID), UserInfo{
@@ -75,7 +94,6 @@ func (l *Limiter) AddInboundLimiter(tag string, nodeSpeedLimit uint64, userList 
 }
 
 func (l *Limiter) UpdateInboundLimiter(tag string, updatedUserList *[]api.UserInfo) error {
-
 	if value, ok := l.InboundInfo.Load(tag); ok {
 		inboundInfo := value.(*InboundInfo)
 		// Update User info
@@ -109,7 +127,8 @@ func (l *Limiter) DeleteInboundLimiter(tag string) error {
 }
 
 func (l *Limiter) GetOnlineDevice(tag string) (*[]api.OnlineUser, error) {
-	onlineUser := make([]api.OnlineUser, 0)
+	var onlineUser []api.OnlineUser
+
 	if value, ok := l.InboundInfo.Load(tag); ok {
 		inboundInfo := value.(*InboundInfo)
 		// Clear Speed Limiter bucket for users who are not online
@@ -121,31 +140,33 @@ func (l *Limiter) GetOnlineDevice(tag string) (*[]api.OnlineUser, error) {
 			return true
 		})
 		inboundInfo.UserOnlineIP.Range(func(key, value interface{}) bool {
+			email := key.(string)
 			ipMap := value.(*sync.Map)
 			ipMap.Range(func(key, value interface{}) bool {
-				ip := key.(string)
 				uid := value.(int)
+				ip := key.(string)
 				onlineUser = append(onlineUser, api.OnlineUser{UID: uid, IP: ip})
 				return true
 			})
-			email := key.(string)
 			inboundInfo.UserOnlineIP.Delete(email) // Reset online device
 			return true
 		})
 	} else {
 		return nil, fmt.Errorf("no such inbound in limiter: %s", tag)
 	}
+
 	return &onlineUser, nil
 }
 
 func (l *Limiter) GetUserBucket(tag string, email string, ip string) (limiter *rate.Limiter, SpeedLimit bool, Reject bool) {
 	if value, ok := l.InboundInfo.Load(tag); ok {
-		inboundInfo := value.(*InboundInfo)
-		nodeLimit := inboundInfo.NodeSpeedLimit
 		var (
 			userLimit        uint64 = 0
 			deviceLimit, uid int
 		)
+
+		inboundInfo := value.(*InboundInfo)
+		nodeLimit := inboundInfo.NodeSpeedLimit
 
 		if v, ok := inboundInfo.UserInfo.Load(email); ok {
 			u := v.(UserInfo)
@@ -154,36 +175,13 @@ func (l *Limiter) GetUserBucket(tag string, email string, ip string) (limiter *r
 			deviceLimit = u.DeviceLimit
 		}
 
-		// Global device limit
-		if l.g.limit > 0 {
-			ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-			defer cancel()
-
-			trimEmail := strings.Split(email, "|")[1]
-			exist, err := l.r.Exists(ctx, trimEmail).Result()
-			if err != nil {
-				newError(fmt.Sprintf("Redis: %v", err)).AtError().WriteToLog()
-			} else {
-				if exist == 0 {
-					l.r.HSet(ctx, trimEmail, ip, uid)
-					l.r.Expire(ctx, trimEmail, time.Duration(l.g.expiry)*time.Minute)
-				} else {
-					l.r.HSet(ctx, trimEmail, ip, uid)
-				}
-				if l.r.HLen(ctx, trimEmail).Val() > int64(l.g.limit) {
-					l.r.HDel(ctx, trimEmail, ip)
-					return nil, false, true
-				}
-			}
-		}
-
 		// Local device limit
 		ipMap := new(sync.Map)
 		ipMap.Store(ip, uid)
 		// If any device is online
 		if v, ok := inboundInfo.UserOnlineIP.LoadOrStore(email, ipMap); ok {
 			ipMap := v.(*sync.Map)
-			// If this ip is a new device
+			// If this is a new ip
 			if _, ok := ipMap.LoadOrStore(ip, uid); !ok {
 				counter := 0
 				ipMap.Range(func(key, value interface{}) bool {
@@ -196,7 +194,16 @@ func (l *Limiter) GetUserBucket(tag string, email string, ip string) (limiter *r
 				}
 			}
 		}
-		limit := determineRate(nodeLimit, userLimit) // If need the Speed limit
+
+		// GlobalLimit
+		if inboundInfo.GlobalLimit.config != nil && inboundInfo.GlobalLimit.config.Enable {
+			if reject := globalLimit(inboundInfo, email, uid, ip, deviceLimit); reject {
+				return nil, false, true
+			}
+		}
+
+		// Speed limit
+		limit := determineRate(nodeLimit, userLimit) // Determine the speed limit rate
 		if limit > 0 {
 			limiter := rate.NewLimiter(rate.Limit(limit), int(limit)) // Byte/s
 			if v, ok := inboundInfo.BucketHub.LoadOrStore(email, limiter); ok {
@@ -211,6 +218,51 @@ func (l *Limiter) GetUserBucket(tag string, email string, ip string) (limiter *r
 	} else {
 		newError("Get Inbound Limiter information failed").AtDebug().WriteToLog()
 		return nil, false, false
+	}
+}
+
+// Global device limit
+func globalLimit(inboundInfo *InboundInfo, email string, uid int, ip string, deviceLimit int) bool {
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(inboundInfo.GlobalLimit.config.Timeout)*time.Second)
+	defer cancel()
+
+	// reformat email for unique key
+	uniqueKey := strings.Replace(email, inboundInfo.Tag, strconv.Itoa(deviceLimit), 1)
+
+	v, err := inboundInfo.GlobalLimit.globalOnlineIP.Get(ctx, uniqueKey, new(map[string]int))
+	if err != nil {
+		if _, ok := err.(*store.NotFound); ok {
+			// If the email is a new device
+			go pushIP(inboundInfo, uniqueKey, &map[string]int{ip: uid})
+		} else {
+			newError("cache service").Base(err).AtError().WriteToLog()
+		}
+		return false
+	}
+
+	ipMap := v.(*map[string]int)
+	// Reject device reach limit directly
+	if deviceLimit > 0 && len(*ipMap) > deviceLimit {
+		return true
+	}
+
+	// If the ip is not in cache
+	if _, ok := (*ipMap)[ip]; !ok {
+		(*ipMap)[ip] = uid
+		go pushIP(inboundInfo, uniqueKey, ipMap)
+	}
+
+	return false
+}
+
+// push the ip to cache
+func pushIP(inboundInfo *InboundInfo, uniqueKey string, ipMap *map[string]int) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(inboundInfo.GlobalLimit.config.Timeout)*time.Second)
+	defer cancel()
+
+	if err := inboundInfo.GlobalLimit.globalOnlineIP.Set(ctx, uniqueKey, ipMap); err != nil {
+		newError("cache service").Base(err).AtError().WriteToLog()
 	}
 }
 
