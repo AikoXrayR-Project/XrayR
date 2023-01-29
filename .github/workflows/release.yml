@@ -136,7 +136,7 @@ jobs:
       - name: Build Mips softfloat AikoXrayR
         if: matrix.goarch == 'mips' || matrix.goarch == 'mipsle'
         run: |
-          GOMIPS=softfloat go build -v -o build_assets/AikoXrayR_softfloat -trimpath -ldflags "-s -w -buildid=" ./AikoXrayR
+          GOMIPS=softfloat go build -v -o build_assets/AikoXrayR_softfloat -trimpath -ldflags "-s -w -buildid=" ./main
       - name: Rename Windows AikoXrayR
         if: matrix.goos == 'windows'
         run: |
