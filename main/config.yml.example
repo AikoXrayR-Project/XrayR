@@ -13,7 +13,7 @@ OutboundConfigPath: # /etc/XrayR/custom_outbound.json # Path to custom outbound 
   BufferSize: 64 # The internal cache size of each connection, kB 
 Nodes:
   -
-    PanelType: "V2board" # Panel type: SSpanel, V2board, PMpanel, Proxypanel
+    PanelType: "AikoPanel" # Panel type: SSpanel, V2board, PMpanel, Proxypanel, AikoPanel
     ApiConfig:
       ApiHost: "http://127.0.0.1:667"
       ApiKey: "123"
