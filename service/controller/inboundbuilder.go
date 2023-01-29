@@ -2,11 +2,16 @@
 package controller
 
 import (
+	"crypto/rand"
+	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"strings"
 
+	"github.com/sagernet/sing-shadowsocks/shadowaead_2022"
+	C "github.com/sagernet/sing/common"
 	"github.com/xtls/xray-core/common/net"
-	"github.com/xtls/xray-core/common/uuid"
 	"github.com/xtls/xray-core/core"
 	"github.com/xtls/xray-core/infra/conf"
 
@@ -51,7 +56,8 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo, tag string) (*core.I
 
 	var proxySetting interface{}
 	// Build Protocol and Protocol setting
-	if nodeInfo.NodeType == "V2ray" {
+	switch nodeInfo.NodeType {
+	case "V2ray":
 		if nodeInfo.EnableVless {
 			protocol = "vless"
 			// Enable fallback
@@ -74,7 +80,7 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo, tag string) (*core.I
 			protocol = "vmess"
 			proxySetting = &conf.VMessInboundConfig{}
 		}
-	} else if nodeInfo.NodeType == "Trojan" {
+	case "Trojan":
 		protocol = "trojan"
 		// Enable fallback
 		if config.EnableFallback {
@@ -89,23 +95,36 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo, tag string) (*core.I
 		} else {
 			proxySetting = &conf.TrojanServerConfig{}
 		}
-	} else if nodeInfo.NodeType == "Shadowsocks" || nodeInfo.NodeType == "Shadowsocks-Plugin" {
+	case "Shadowsocks", "Shadowsocks-Plugin":
 		protocol = "shadowsocks"
-		proxySetting = &conf.ShadowsocksServerConfig{}
-		randomPasswd := uuid.New()
-		defaultSSuser := &conf.ShadowsocksUserConfig{
-			Cipher:   "aes-128-gcm",
-			Password: randomPasswd.String(),
+		cipher := strings.ToLower(nodeInfo.CypherMethod)
+
+		proxySetting = &conf.ShadowsocksServerConfig{
+			Cipher:   cipher,
+			Password: nodeInfo.ServerKey, // shadowsocks2022 shareKey
 		}
+
 		proxySetting, _ := proxySetting.(*conf.ShadowsocksServerConfig)
-		proxySetting.Users = append(proxySetting.Users, defaultSSuser)
+		// shadowsocks must have a random password
+		// shadowsocks2022's password == user PSK, thus should a length of string >= 32 and base64 encoder
+		b := make([]byte, 32)
+		rand.Read(b)
+		randPasswd := hex.EncodeToString(b)
+		if C.Contains(shadowaead_2022.List, cipher) {
+			proxySetting.Users = append(proxySetting.Users, &conf.ShadowsocksUserConfig{
+				Password: base64.StdEncoding.EncodeToString(b),
+			})
+		} else {
+			proxySetting.Password = randPasswd
+		}
+
 		proxySetting.NetworkList = &conf.NetworkList{"tcp", "udp"}
 		proxySetting.IVCheck = true
 		if config.DisableIVCheck {
 			proxySetting.IVCheck = false
 		}
 
-	} else if nodeInfo.NodeType == "dokodemo-door" {
+	case "dokodemo-door":
 		protocol = "dokodemo-door"
 		proxySetting = struct {
 			Host        string   `json:"address"`
@@ -114,8 +133,8 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo, tag string) (*core.I
 			Host:        "v1.mux.cool",
 			NetworkList: []string{"tcp", "udp"},
 		}
-	} else {
-		return nil, fmt.Errorf("Unsupported node type: %s, Only support: V2ray, Trojan, Shadowsocks, and Shadowsocks-Plugin", nodeInfo.NodeType)
+	default:
+		return nil, fmt.Errorf("unsupported node type: %s, Only support: V2ray, Trojan, Shadowsocks, and Shadowsocks-Plugin", nodeInfo.NodeType)
 	}
 
 	setting, err := json.Marshal(proxySetting)
@@ -199,7 +218,7 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo, tag string) (*core.I
 func getCertFile(certConfig *CertConfig) (certFile string, keyFile string, err error) {
 	if certConfig.CertMode == "file" {
 		if certConfig.CertFile == "" || certConfig.KeyFile == "" {
-			return "", "", fmt.Errorf("Cert file path or key file path not exist")
+			return "", "", fmt.Errorf("cert file or key file is empty")
 		}
 		return certConfig.CertFile, certConfig.KeyFile, nil
 	} else if certConfig.CertMode == "dns" {
@@ -236,7 +255,7 @@ func buildVlessFallbacks(fallbackConfigs []*FallBackConfig) ([]*conf.VLessInboun
 	for i, c := range fallbackConfigs {
 
 		if c.Dest == "" {
-			return nil, fmt.Errorf("Dest is required for fallback fialed")
+			return nil, fmt.Errorf("You must provide dest for fallback")
 		}
 
 		var dest json.RawMessage
