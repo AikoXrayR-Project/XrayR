@@ -131,7 +131,7 @@ jobs:
       - name: Build AikoXrayR
         run: |
           mkdir -p build_assets
-          go build -v -o build_assets/AikoXrayR -trimpath -ldflags "-s -w -buildid=" ./AikoXrayR
+          go build -v -o build_assets/AikoXrayR -trimpath -ldflags "-s -w -buildid=" ./main
     
       - name: Build Mips softfloat AikoXrayR
         if: matrix.goarch == 'mips' || matrix.goarch == 'mipsle'
