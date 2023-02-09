@@ -13,19 +13,19 @@ func getDefaultLogConfig() *LogConfig {
 func getDefaultConnetionConfig() *ConnetionConfig {
 	return &ConnetionConfig{
 		Handshake:    4,
-		ConnIdle:     30,
-		UplinkOnly:   2,
-		DownlinkOnly: 4,
+		ConnIdle:     300,
+		UplinkOnly:   1,
+		DownlinkOnly: 1,
 		BufferSize:   64,
 	}
 }
 
 func getDefaultControllerConfig() *controller.Config {
 	return &controller.Config{
-		ListenIP:       "0.0.0.0",
-		SendIP:         "0.0.0.0",
-		UpdatePeriodic: 60,
-		DNSType:        "AsIs",
+		ListenIP:        "0.0.0.0",
+		SendIP:          "0.0.0.0",
+		UpdatePeriodic:  60,
+		DNSType:         "AsIs",
 		DisableSniffing: true,
 	}
 }

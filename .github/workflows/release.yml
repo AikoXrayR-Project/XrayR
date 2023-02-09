@@ -152,14 +152,14 @@ jobs:
           command: |
             cp ${GITHUB_WORKSPACE}/README.md ./build_assets/README.md
             cp ${GITHUB_WORKSPACE}/LICENSE ./build_assets/LICENSE
-            cp ${GITHUB_WORKSPACE}/AikoXrayR/dns.json ./build_assets/dns.json
-            cp ${GITHUB_WORKSPACE}/AikoXrayR/route.json ./build_assets/route.json
-            cp ${GITHUB_WORKSPACE}/AikoXrayR/custom_outbound.json ./build_assets/custom_outbound.json
-            cp ${GITHUB_WORKSPACE}/AikoXrayR/custom_inbound.json ./build_assets/custom_inbound.json
-            cp ${GITHUB_WORKSPACE}/AikoXrayR/AikoBlock ./build_assets/AikoBlock
-            cp ${GITHUB_WORKSPACE}/AikoXrayR/acces.log.example ./build_assets/acces.log
-            cp ${GITHUB_WORKSPACE}/AikoXrayR/error.log.example ./build_assets/error.log
-            cp ${GITHUB_WORKSPACE}/AikoXrayR/aiko.yml.example ./build_assets/aiko.yml
+            cp ${GITHUB_WORKSPACE}/main/dns.json ./build_assets/dns.json
+            cp ${GITHUB_WORKSPACE}/main/route.json ./build_assets/route.json
+            cp ${GITHUB_WORKSPACE}/main/custom_outbound.json ./build_assets/custom_outbound.json
+            cp ${GITHUB_WORKSPACE}/main/custom_inbound.json ./build_assets/custom_inbound.json
+            cp ${GITHUB_WORKSPACE}/main/rulelist ./build_assets/rulelist
+            cp ${GITHUB_WORKSPACE}/main/acces.log.example ./build_assets/acces.log
+            cp ${GITHUB_WORKSPACE}/main/error.log.example ./build_assets/error.log
+            cp ${GITHUB_WORKSPACE}/main/config.yml.example ./build_assets/aiko.yml
             LIST=('geoip geoip geoip' 'domain-list-community dlc geosite')
             for i in "${LIST[@]}"
             do
