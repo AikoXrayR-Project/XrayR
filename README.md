@@ -81,3 +81,4 @@ docker pull aikocute/xrayr:latest && docker run --restart=always --name xrayr -d
 ## Stargazers over time
 
 [![Stargazers over time](https://starchart.cc/AikoCute/XrayR.svg)](https://starchart.cc/AikoCute/XrayR)
+
