@@ -15,8 +15,8 @@ require (
 	github.com/imdario/mergo v0.3.13
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/r3labs/diff/v2 v2.15.1
-	github.com/sagernet/sing v0.1.6
-	github.com/sagernet/sing-shadowsocks v0.1.0
+	github.com/sagernet/sing v0.1.7
+	github.com/sagernet/sing-shadowsocks v0.1.1
 	github.com/shirou/gopsutil/v3 v3.23.1
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.1
@@ -174,7 +174,7 @@ require (
 	go.starlark.net v0.0.0-20230105143730-d7da88764354 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/ratelimit v0.2.0 // indirect
-	golang.org/x/crypto v0.5.0 // indirect
+	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/exp v0.0.0-20230105202349-8879d0199aa3 // indirect
 	golang.org/x/mod v0.7.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783 // indirect
