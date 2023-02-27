@@ -170,8 +170,8 @@ github.com/dimchansky/utfbom v1.1.1/go.mod h1:SxdoEBH5qIqFocHMyGOXVAybYJdr71b1Q/
 github.com/dnsimple/dnsimple-go v0.71.1 h1:1hGoBA3CIjpjZj5DM3081xfxr4e2jYmYnkO2VuBF8Qc=
 github.com/dnsimple/dnsimple-go v0.71.1/go.mod h1:F9WHww9cC76hrnwGFfAfrqdW99j3MOYasQcIwTS/aUk=
 github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
-github.com/eko/gocache/lib/v4 v4.1.2 h1:cX54GhJJsfc5jvCEaPW8595h9Pq6bbNfkv0o/669Tw4=
-github.com/eko/gocache/lib/v4 v4.1.2/go.mod h1:FqyrANKct257VFHVVs11m6V2syGobOmHycQCyRSMwu0=
+github.com/eko/gocache/lib/v4 v4.1.3 h1:i7xVxWWhAESLAcHgp73piJtST63TS7ThFD7LE78vmXc=
+github.com/eko/gocache/lib/v4 v4.1.3/go.mod h1:7uSUlaDeRgr17IYCV8kSluhRDXq4SGutWWxTpxpwW3w=
 github.com/eko/gocache/store/go_cache/v4 v4.1.2 h1:tRp+DQ8HOKGgCySXp1HFgeYC8+LyAyV+j9xig6IYz2A=
 github.com/eko/gocache/store/go_cache/v4 v4.1.2/go.mod h1:aSHMK36ERJXhVvwXS+ulWZWuuqGoiSf54Z3zwIjHeT8=
 github.com/eko/gocache/store/redis/v4 v4.1.2 h1:PtpjQu8Q698kpC3H06As5As15s+hJofV8NtkddVX5aQ=
@@ -950,8 +950,8 @@ golang.org/x/net v0.0.0-20211029224645-99673261e6eb/go.mod h1:9nx3DQGgdP8bBQD5qx
 golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
 golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd/go.mod h1:CfG3xpIq0wQ8r1q4Su4UZFWDARRcnwPjda9FqA0JpMk=
 golang.org/x/net v0.0.0-20220225172249-27dd8689420f/go.mod h1:CfG3xpIq0wQ8r1q4Su4UZFWDARRcnwPjda9FqA0JpMk=
-golang.org/x/net v0.6.0 h1:L4ZwwTvKW9gr0ZMS1yrHD9GZhIuVjOBBnaKH+SPQK0Q=
-golang.org/x/net v0.6.0/go.mod h1:2Tu9+aMcznHK/AK1HMvgo6xiTLG5rD5rZLDS+rp2Bjs=
+golang.org/x/net v0.7.0 h1:rJrUqqhjsgNp7KqAIc25s9pZnjU7TUcSY7HcVZjdn1g=
+golang.org/x/net v0.7.0/go.mod h1:2Tu9+aMcznHK/AK1HMvgo6xiTLG5rD5rZLDS+rp2Bjs=
 golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=
 golang.org/x/oauth2 v0.0.0-20181017192945-9dcd33a902f4/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=
 golang.org/x/oauth2 v0.0.0-20181203162652-d668ce993890/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=

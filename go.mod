@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/deckarep/golang-set v1.8.0
-	github.com/eko/gocache/lib/v4 v4.1.2
+	github.com/eko/gocache/lib/v4 v4.1.3
 	github.com/eko/gocache/store/go_cache/v4 v4.1.2
 	github.com/eko/gocache/store/redis/v4 v4.1.2
 	github.com/fsnotify/fsnotify v1.6.0
@@ -22,7 +22,7 @@ require (
 	github.com/stretchr/testify v1.8.1
 	github.com/urfave/cli v1.22.12
 	github.com/xtls/xray-core v1.7.2
-	golang.org/x/net v0.6.0
+	golang.org/x/net v0.7.0
 	golang.org/x/time v0.3.0
 	google.golang.org/protobuf v1.28.1
 )
