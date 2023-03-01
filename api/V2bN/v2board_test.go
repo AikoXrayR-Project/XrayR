@@ -1,10 +1,10 @@
-package aiko_test
+package V2bN_test
 
 import (
 	"testing"
 
 	"github.com/AikoXrayR-Project/XrayR/api"
-	"github.com/AikoXrayR-Project/XrayR/api/aiko"
+	"github.com/AikoXrayR-Project/XrayR/api/V2bN"
 )
 
 func CreateClient() api.API {
@@ -14,7 +14,7 @@ func CreateClient() api.API {
 		NodeID:   1,
 		NodeType: "V2ray",
 	}
-	client := aiko.New(apiConfig)
+	client := V2bN.New(apiConfig)
 	return client
 }
 
@@ -34,7 +34,7 @@ func TestGetSSNodeInfo(t *testing.T) {
 		NodeID:   1,
 		NodeType: "Shadowsocks",
 	}
-	client := aiko.New(apiConfig)
+	client := V2bN.New(apiConfig)
 	nodeInfo, err := client.GetNodeInfo()
 	if err != nil {
 		t.Error(err)
@@ -49,7 +49,7 @@ func TestGetTrojanNodeInfo(t *testing.T) {
 		NodeID:   1,
 		NodeType: "Trojan",
 	}
-	client := aiko.New(apiConfig)
+	client := V2bN.New(apiConfig)
 	nodeInfo, err := client.GetNodeInfo()
 	if err != nil {
 		t.Error(err)
