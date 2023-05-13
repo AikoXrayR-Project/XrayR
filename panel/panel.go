@@ -17,6 +17,7 @@ import (
 	"github.com/xtls/xray-core/infra/conf"
 
 	"github.com/AikoXrayR-Project/XrayR/api"
+	"github.com/AikoXrayR-Project/XrayR/api/oldv2board"
 	"github.com/AikoXrayR-Project/XrayR/api/pmpanel"
 	"github.com/AikoXrayR-Project/XrayR/api/proxypanel"
 	"github.com/AikoXrayR-Project/XrayR/api/sspanel"
@@ -177,6 +178,8 @@ func (p *Panel) Start() {
 		case "SSpanel":
 			apiClient = sspanel.New(nodeConfig.ApiConfig)
 		// todo Deprecated after 2023.6.1
+		case "V2board":
+			apiClient = oldv2board.New(nodeConfig.ApiConfig)
 		case "V2b":
 			apiClient = v2board.New(nodeConfig.ApiConfig)
 		case "PMpanel":
