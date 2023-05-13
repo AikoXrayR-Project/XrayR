@@ -34,7 +34,7 @@ type InboundInfo struct {
 	BucketHub      *sync.Map // key: Email, value: *rate.Limiter
 	UserOnlineIP   *sync.Map // Key: Email, value: {Key: IP, value: UID}
 	GlobalLimit    struct {
-		config         *RedisConfig
+		config         *RedisLimitConfig
 		globalOnlineIP *marshaler.Marshaler
 	}
 }
@@ -49,7 +49,7 @@ func New() *Limiter {
 	}
 }
 
-func (l *Limiter) AddInboundLimiter(tag string, nodeSpeedLimit uint64, userList *[]api.UserInfo, globalLimit *RedisConfig) error {
+func (l *Limiter) AddInboundLimiter(tag string, nodeSpeedLimit uint64, userList *[]api.UserInfo, globalLimit *RedisLimitConfig) error {
 	inboundInfo := &InboundInfo{
 		Tag:            tag,
 		NodeSpeedLimit: nodeSpeedLimit,

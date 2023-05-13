@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/AikoXrayR-Project/XrayR/api"
+	"github.com/AikoXrayR-Project/XrayR/common/mylego"
 	. "github.com/AikoXrayR-Project/XrayR/service/controller"
 )
 
@@ -18,9 +19,8 @@ func TestBuildV2ray(t *testing.T) {
 		Host:              "test.test.tk",
 		Path:              "v2ray",
 		EnableTLS:         false,
-		TLSType:           "tls",
 	}
-	certConfig := &CertConfig{
+	certConfig := &mylego.CertConfig{
 		CertMode:   "http",
 		CertDomain: "test.test.tk",
 		Provider:   "alidns",
@@ -45,13 +45,12 @@ func TestBuildTrojan(t *testing.T) {
 		TransportProtocol: "tcp",
 		Host:              "trojan.test.tk",
 		Path:              "v2ray",
-		EnableTLS:         false,
-		TLSType:           "tls",
+		EnableTLS:         true,
 	}
 	DNSEnv := make(map[string]string)
 	DNSEnv["ALICLOUD_ACCESS_KEY"] = "aaa"
 	DNSEnv["ALICLOUD_SECRET_KEY"] = "bbb"
-	certConfig := &CertConfig{
+	certConfig := &mylego.CertConfig{
 		CertMode:   "dns",
 		CertDomain: "trojan.test.tk",
 		Provider:   "alidns",
@@ -78,12 +77,11 @@ func TestBuildSS(t *testing.T) {
 		Host:              "test.test.tk",
 		Path:              "v2ray",
 		EnableTLS:         false,
-		TLSType:           "tls",
 	}
 	DNSEnv := make(map[string]string)
 	DNSEnv["ALICLOUD_ACCESS_KEY"] = "aaa"
 	DNSEnv["ALICLOUD_SECRET_KEY"] = "bbb"
-	certConfig := &CertConfig{
+	certConfig := &mylego.CertConfig{
 		CertMode:   "dns",
 		CertDomain: "trojan.test.tk",
 		Provider:   "alidns",

@@ -13,6 +13,7 @@ import (
 
 	"github.com/AikoXrayR-Project/XrayR/api"
 	"github.com/AikoXrayR-Project/XrayR/api/sspanel"
+	"github.com/AikoXrayR-Project/XrayR/common/mylego"
 	_ "github.com/AikoXrayR-Project/XrayR/main/distro/all"
 	. "github.com/AikoXrayR-Project/XrayR/service/controller"
 )
@@ -23,7 +24,7 @@ func TestController(t *testing.T) {
 		LogConfig: &conf.LogConfig{LogLevel: "debug"},
 	}
 	policyConfig := &conf.PolicyConfig{}
-	policyConfig.Levels = map[uint32]*conf.Policy{0: &conf.Policy{
+	policyConfig.Levels = map[uint32]*conf.Policy{0: {
 		StatsUserUplink:   true,
 		StatsUserDownlink: true,
 	}}
@@ -46,13 +47,13 @@ func TestController(t *testing.T) {
 	if err = server.Start(); err != nil {
 		t.Errorf("Failed to start instance: %s", err)
 	}
-	certConfig := &CertConfig{
+	certConfig := &mylego.CertConfig{
 		CertMode:   "http",
 		CertDomain: "test.ss.tk",
 		Provider:   "alidns",
 		Email:      "ss@ss.com",
 	}
-	controlerconfig := &Config{
+	controlerConfig := &Config{
 		UpdatePeriodic: 5,
 		CertConfig:     certConfig,
 	}
@@ -62,8 +63,8 @@ func TestController(t *testing.T) {
 		NodeID:   41,
 		NodeType: "V2ray",
 	}
-	apiclient := sspanel.New(apiConfig)
-	c := New(server, apiclient, controlerconfig, "SSpanel")
+	apiClient := sspanel.New(apiConfig)
+	c := New(server, apiClient, controlerConfig, "SSpanel")
 	fmt.Println("Sleep 1s")
 	err = c.Start()
 	if err != nil {

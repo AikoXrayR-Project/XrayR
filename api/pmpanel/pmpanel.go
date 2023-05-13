@@ -24,7 +24,6 @@ type APIClient struct {
 	Key           string
 	NodeType      string
 	EnableVless   bool
-	EnableXTLS    bool
 	SpeedLimit    float64
 	DeviceLimit   int
 	LocalRuleList []api.DetectRule
@@ -61,7 +60,6 @@ func New(apiConfig *api.Config) *APIClient {
 		APIHost:       apiConfig.APIHost,
 		NodeType:      apiConfig.NodeType,
 		EnableVless:   apiConfig.EnableVless,
-		EnableXTLS:    apiConfig.EnableXTLS,
 		SpeedLimit:    apiConfig.SpeedLimit,
 		DeviceLimit:   apiConfig.DeviceLimit,
 		LocalRuleList: localRuleList,
@@ -95,7 +93,7 @@ func readLocalRuleList(path string) (LocalRuleList []api.DetectRule) {
 		// handle first encountered error while reading
 		if err := fileScanner.Err(); err != nil {
 			log.Fatalf("Error while reading file: %s", err)
-			return make([]api.DetectRule, 0)
+			return
 		}
 
 		file.Close()
@@ -131,7 +129,7 @@ func (c *APIClient) parseResponse(res *resty.Response, path string, err error) (
 
 	if response.Ret != 200 {
 		res, _ := json.Marshal(&response)
-		return nil, fmt.Errorf("Ret %s invalid", string(res))
+		return nil, fmt.Errorf("ret %s invalid", string(res))
 	}
 	return response, nil
 }
@@ -168,7 +166,7 @@ func (c *APIClient) GetNodeInfo() (nodeInfo *api.NodeInfo, err error) {
 	nodeInfoResponse := new(NodeInfoResponse)
 
 	if err := json.Unmarshal(response.Data, nodeInfoResponse); err != nil {
-		return nil, fmt.Errorf("Unmarshal %s failed: %s", reflect.TypeOf(nodeInfoResponse), err)
+		return nil, fmt.Errorf("unmarshal %s failed: %s", reflect.TypeOf(nodeInfoResponse), err)
 	}
 	switch c.NodeType {
 	case "V2ray":
@@ -178,7 +176,7 @@ func (c *APIClient) GetNodeInfo() (nodeInfo *api.NodeInfo, err error) {
 	case "Shadowsocks":
 		nodeInfo, err = c.ParseSSNodeResponse(nodeInfoResponse)
 	default:
-		return nil, fmt.Errorf("Unsupported Node type: %s", c.NodeType)
+		return nil, fmt.Errorf("unsupported Node type: %s", c.NodeType)
 	}
 
 	if err != nil {
@@ -220,12 +218,12 @@ func (c *APIClient) GetUserList() (UserList *[]api.UserInfo, err error) {
 
 	var userListResponse *[]UserResponse
 	if err := json.Unmarshal(response.Data, &userListResponse); err != nil {
-		return nil, fmt.Errorf("Unmarshal %s failed: %s", reflect.TypeOf(userListResponse), err)
+		return nil, fmt.Errorf("unmarshal %s failed: %s", reflect.TypeOf(userListResponse), err)
 	}
 	userList, err := c.ParseUserListResponse(userListResponse)
 	if err != nil {
 		res, _ := json.Marshal(userListResponse)
-		return nil, fmt.Errorf("Parse user list failed: %s", string(res))
+		return nil, fmt.Errorf("parse user list failed: %s", string(res))
 	}
 	return userList, nil
 }
@@ -339,7 +337,7 @@ func (c *APIClient) GetNodeRule() (*[]api.DetectRule, error) {
 	ruleListResponse := new([]RuleItem)
 
 	if err := json.Unmarshal(response.Data, ruleListResponse); err != nil {
-		return nil, fmt.Errorf("Unmarshal %s failed: %s", reflect.TypeOf(ruleListResponse), err)
+		return nil, fmt.Errorf("unmarshal %s failed: %s", reflect.TypeOf(ruleListResponse), err)
 	}
 
 	for _, r := range *ruleListResponse {
@@ -359,8 +357,8 @@ func (c *APIClient) ReportIllegal(detectResultList *[]api.DetectResult) error {
 // ParseV2rayNodeResponse parse the response for the given nodeinfor format
 func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.NodeInfo, error) {
 	var enableTLS bool
-	var path, host, TLStype, transportProtocol, serviceName string
-	var speedlimit uint64 = 0
+	var path, host, transportProtocol, serviceName string
+	var speedLimit uint64 = 0
 
 	port := nodeInfoResponse.Port
 	alterID := nodeInfoResponse.AlterId
@@ -376,31 +374,25 @@ func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *NodeInfoResponse) (
 	}
 	// Compatible with more node types config
 	switch nodeInfoResponse.Security {
-	case "tls", "xtls":
-		if c.EnableXTLS {
-			TLStype = "xtls"
-		} else {
-			TLStype = "tls"
-		}
+	case "tls":
 		enableTLS = true
 	default:
 		enableTLS = false
 	}
 	if c.SpeedLimit > 0 {
-		speedlimit = uint64((c.SpeedLimit * 1000000) / 8)
+		speedLimit = uint64((c.SpeedLimit * 1000000) / 8)
 	} else {
-		speedlimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8)
+		speedLimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8)
 	}
 	// Create GeneralNodeInfo
 	nodeinfo := &api.NodeInfo{
 		NodeType:          c.NodeType,
 		NodeID:            c.NodeID,
 		Port:              port,
-		SpeedLimit:        speedlimit,
+		SpeedLimit:        speedLimit,
 		AlterID:           alterID,
 		TransportProtocol: transportProtocol,
 		EnableTLS:         enableTLS,
-		TLSType:           TLStype,
 		Path:              path,
 		Host:              host,
 		EnableVless:       c.EnableVless,
@@ -412,38 +404,33 @@ func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *NodeInfoResponse) (
 
 // ParseSSNodeResponse parse the response for the given nodeinfor format
 func (c *APIClient) ParseSSNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.NodeInfo, error) {
-	var speedlimit uint64 = 0
+	var speedLimit uint64 = 0
 
 	if c.SpeedLimit > 0 {
-		speedlimit = uint64((c.SpeedLimit * 1000000) / 8)
+		speedLimit = uint64((c.SpeedLimit * 1000000) / 8)
 	} else {
-		speedlimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8)
+		speedLimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8)
 	}
 	// Create GeneralNodeInfo
-	nodeinfo := &api.NodeInfo{
+	nodeInfo := &api.NodeInfo{
 		NodeType:          c.NodeType,
 		NodeID:            c.NodeID,
 		Port:              nodeInfoResponse.Port,
-		SpeedLimit:        speedlimit,
+		SpeedLimit:        speedLimit,
 		TransportProtocol: "tcp",
 		CypherMethod:      nodeInfoResponse.Method,
 	}
 
-	return nodeinfo, nil
+	return nodeInfo, nil
 }
 
 // ParseTrojanNodeResponse parse the response for the given nodeinfor format
 func (c *APIClient) ParseTrojanNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.NodeInfo, error) {
 	// 域名或IP;port=连接端口#偏移端口|host=xx
 	// gz.aaa.com;port=443#12345|host=hk.aaa.com
-	var TLSType, host string
+	var host string
 	var transportProtocol = "tcp"
 	var speedlimit uint64 = 0
-	if c.EnableXTLS {
-		TLSType = "xtls"
-	} else {
-		TLSType = "tls"
-	}
 	host = nodeInfoResponse.Host
 	port := nodeInfoResponse.Port
 
@@ -456,25 +443,24 @@ func (c *APIClient) ParseTrojanNodeResponse(nodeInfoResponse *NodeInfoResponse) 
 		transportProtocol = "grpc"
 	}
 	// Create GeneralNodeInfo
-	nodeinfo := &api.NodeInfo{
+	nodeInfo := &api.NodeInfo{
 		NodeType:          c.NodeType,
 		NodeID:            c.NodeID,
 		Port:              port,
 		SpeedLimit:        speedlimit,
 		TransportProtocol: transportProtocol,
 		EnableTLS:         true,
-		TLSType:           TLSType,
 		Host:              host,
 		ServiceName:       nodeInfoResponse.Sni,
 	}
 
-	return nodeinfo, nil
+	return nodeInfo, nil
 }
 
 // ParseUserListResponse parse the response for the given nodeinfo format
 func (c *APIClient) ParseUserListResponse(userInfoResponse *[]UserResponse) (*[]api.UserInfo, error) {
-	var deviceLimit int = 0
-	var speedlimit uint64 = 0
+	var deviceLimit = 0
+	var speedLimit uint64 = 0
 	userList := make([]api.UserInfo, len(*userInfoResponse))
 	for i, user := range *userInfoResponse {
 		if c.DeviceLimit > 0 {
@@ -483,15 +469,15 @@ func (c *APIClient) ParseUserListResponse(userInfoResponse *[]UserResponse) (*[]
 			deviceLimit = user.DeviceLimit
 		}
 		if c.SpeedLimit > 0 {
-			speedlimit = uint64((c.SpeedLimit * 1000000) / 8)
+			speedLimit = uint64((c.SpeedLimit * 1000000) / 8)
 		} else {
-			speedlimit = uint64((user.SpeedLimit * 1000000) / 8)
+			speedLimit = uint64((user.SpeedLimit * 1000000) / 8)
 		}
 		userList[i] = api.UserInfo{
 			UID:         user.ID,
 			Passwd:      user.Passwd,
 			UUID:        user.Passwd,
-			SpeedLimit:  speedlimit,
+			SpeedLimit:  speedLimit,
 			DeviceLimit: deviceLimit,
 		}
 	}

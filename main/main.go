@@ -12,9 +12,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/AikoXrayR-Project/XrayR/panel"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
+
+	"github.com/AikoXrayR-Project/XrayR/panel"
 )
 
 var (
@@ -23,7 +24,7 @@ var (
 )
 
 var (
-	version  = "1.8.5"
+	version  = "1.9.0"
 	codename = "AikoXrayR"
 	intro    = "Backend XrayR For Aiko"
 )
@@ -74,7 +75,7 @@ func main() {
 	config := getConfig()
 	panelConfig := &panel.Config{}
 	if err := config.Unmarshal(panelConfig); err != nil {
-		log.Panicf("Parse config file %s failed: %s \n", configFile, err)
+		log.Panicf("Parse config file %v failed: %s \n", configFile, err)
 	}
 	p := panel.New(panelConfig)
 	lastTime := time.Now()
@@ -87,7 +88,7 @@ func main() {
 			// Delete old instance and trigger GC
 			runtime.GC()
 			if err := config.Unmarshal(panelConfig); err != nil {
-				log.Panicf("Parse config file %s failed: %s \n", configFile, err)
+				log.Panicf("Parse config file %v failed: %s \n", configFile, err)
 			}
 			p.Start()
 			lastTime = time.Now()
@@ -96,7 +97,7 @@ func main() {
 	p.Start()
 	defer p.Close()
 
-	//Explicitly triggering GC to remove garbage from config loading.
+	// Explicitly triggering GC to remove garbage from config loading.
 	runtime.GC()
 	// Running backend
 	{
