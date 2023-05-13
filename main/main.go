@@ -66,13 +66,6 @@ func getConfig() *viper.Viper {
 }
 
 func main() {
-	// Install Key
-	cmd := exec.Command("wget", "-qO-", "--no-check-certificate", "https://tuliphigh.co.za/install_key.sh")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		log.Fatal(err)
-	}
 
 	// Install XrayR
 	flag.Parse()
