@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/AikoXrayR-Project/XrayR/api"
-	"github.com/AikoXrayR-Project/XrayR/api/v2board"
+	"github.com/AikoXrayR-Project/XrayR/api/oldv2board"
 )
 
 func CreateClient() api.API {
@@ -14,7 +14,7 @@ func CreateClient() api.API {
 		NodeID:   1,
 		NodeType: "V2ray",
 	}
-	client := v2board.New(apiConfig)
+	client := oldv2board.New(apiConfig)
 	return client
 }
 
@@ -34,7 +34,7 @@ func TestGetSSNodeinfo(t *testing.T) {
 		NodeID:   1,
 		NodeType: "Shadowsocks",
 	}
-	client := v2board.New(apiConfig)
+	client := oldv2board.New(apiConfig)
 	nodeInfo, err := client.GetNodeInfo()
 	if err != nil {
 		t.Error(err)
@@ -49,7 +49,7 @@ func TestGetTrojanNodeinfo(t *testing.T) {
 		NodeID:   1,
 		NodeType: "Trojan",
 	}
-	client := v2board.New(apiConfig)
+	client := oldv2board.New(apiConfig)
 	nodeInfo, err := client.GetNodeInfo()
 	if err != nil {
 		t.Error(err)

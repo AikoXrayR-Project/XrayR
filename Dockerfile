@@ -8,7 +8,6 @@ RUN go build -v -o XrayR -trimpath -ldflags "-s -w -buildid=" ./main
 
 # Release
 FROM  alpine
-# 安装必要的工具包
 RUN  apk --update --no-cache add tzdata ca-certificates \
     && cp /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime
 RUN mkdir /etc/XrayR/
