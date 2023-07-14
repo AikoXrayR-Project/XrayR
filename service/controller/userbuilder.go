@@ -25,12 +25,11 @@ var AEADMethod = map[shadowsocks.CipherType]uint8{
 	shadowsocks.CipherType_XCHACHA20_POLY1305: 0,
 }
 
-func (c *Controller) buildVmessUser(userInfo *[]api.UserInfo, serverAlterID uint16) (users []*protocol.User) {
+func (c *Controller) buildVmessUser(userInfo *[]api.UserInfo) (users []*protocol.User) {
 	users = make([]*protocol.User, len(*userInfo))
 	for i, user := range *userInfo {
 		vmessAccount := &conf.VMessAccount{
 			ID:       user.UUID,
-			AlterIds: serverAlterID,
 			Security: "auto",
 		}
 		users[i] = &protocol.User{
@@ -47,7 +46,7 @@ func (c *Controller) buildVlessUser(userInfo *[]api.UserInfo) (users []*protocol
 	for i, user := range *userInfo {
 		vlessAccount := &vless.Account{
 			Id:   user.UUID,
-			Flow: "xtls-rprx-vision,none",
+			Flow: c.nodeInfo.VlessFlow,
 		}
 		users[i] = &protocol.User{
 			Level:   0,
@@ -63,7 +62,7 @@ func (c *Controller) buildTrojanUser(userInfo *[]api.UserInfo) (users []*protoco
 	for i, user := range *userInfo {
 		trojanAccount := &trojan.Account{
 			Password: user.UUID,
-			Flow:     "xtls-rprx-direct",
+			Flow:     "",
 		}
 		users[i] = &protocol.User{
 			Level:   0,

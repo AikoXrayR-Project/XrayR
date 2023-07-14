@@ -45,7 +45,7 @@ func TestBuildTrojan(t *testing.T) {
 		TransportProtocol: "tcp",
 		Host:              "trojan.test.tk",
 		Path:              "v2ray",
-		EnableTLS:         true,
+		EnableTLS:         false,
 	}
 	DNSEnv := make(map[string]string)
 	DNSEnv["ALICLOUD_ACCESS_KEY"] = "aaa"

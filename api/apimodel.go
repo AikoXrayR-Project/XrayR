@@ -7,6 +7,12 @@ import (
 	"github.com/xtls/xray-core/infra/conf"
 )
 
+const (
+	UserNotModified = "users not modified"
+	NodeNotModified = "node not modified"
+	RuleNotModified = "rules not modified"
+)
+
 // Config API config
 type Config struct {
 	APIHost             string  `mapstructure:"ApiHost"`
@@ -14,6 +20,7 @@ type Config struct {
 	Key                 string  `mapstructure:"ApiKey"`
 	NodeType            string  `mapstructure:"NodeType"`
 	EnableVless         bool    `mapstructure:"EnableVless"`
+	VlessFlow           string  `mapstructure:"VlessFlow"`
 	Timeout             int     `mapstructure:"Timeout"`
 	SpeedLimit          float64 `mapstructure:"SpeedLimit"`
 	DeviceLimit         int     `mapstructure:"DeviceLimit"`
@@ -41,6 +48,7 @@ type NodeInfo struct {
 	Path              string
 	EnableTLS         bool
 	EnableVless       bool
+	VlessFlow         string
 	CypherMethod      string
 	ServerKey         string
 	ServiceName       string

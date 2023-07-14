@@ -1,4 +1,4 @@
-package v2board
+package V2board
 
 import (
 	"encoding/json"

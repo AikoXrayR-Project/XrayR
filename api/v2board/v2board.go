@@ -1,4 +1,4 @@
-package v2board
+package V2board
 
 import (
 	"bufio"
@@ -29,11 +29,12 @@ type APIClient struct {
 	Key           string
 	NodeType      string
 	EnableVless   bool
+	VlessFlow     string
 	SpeedLimit    float64
 	DeviceLimit   int
 	LocalRuleList []api.DetectRule
 	resp          atomic.Value
-	eTag          string
+	eTags         map[string]string
 }
 
 // New create an api instance
@@ -68,9 +69,11 @@ func New(apiConfig *api.Config) *APIClient {
 		APIHost:       apiConfig.APIHost,
 		NodeType:      apiConfig.NodeType,
 		EnableVless:   apiConfig.EnableVless,
+		VlessFlow:     apiConfig.VlessFlow,
 		SpeedLimit:    apiConfig.SpeedLimit,
 		DeviceLimit:   apiConfig.DeviceLimit,
 		LocalRuleList: localRuleList,
+		eTags:         make(map[string]string),
 	}
 	return apiClient
 }
@@ -145,8 +148,18 @@ func (c *APIClient) GetNodeInfo() (nodeInfo *api.NodeInfo, err error) {
 	path := "/api/v1/server/UniProxy/config"
 
 	res, err := c.client.R().
+		SetHeader("If-None-Match", c.eTags["node"]).
 		ForceContentType("application/json").
 		Get(path)
+
+	// Etag identifier for a specific version of a resource. StatusCode = 304 means no changed
+	if res.StatusCode() == 304 {
+		return nil, errors.New(api.NodeNotModified)
+	}
+	// update etag
+	if res.Header().Get("Etag") != "" && res.Header().Get("Etag") != c.eTags["node"] {
+		c.eTags["node"] = res.Header().Get("Etag")
+	}
 
 	nodeInfoResp, err := c.parseResponse(res, path, err)
 	if err != nil {
@@ -192,17 +205,17 @@ func (c *APIClient) GetUserList() (UserList *[]api.UserInfo, err error) {
 	}
 
 	res, err := c.client.R().
-		SetHeader("If-None-Match", c.eTag).
+		SetHeader("If-None-Match", c.eTags["users"]).
 		ForceContentType("application/json").
 		Get(path)
 
 	// Etag identifier for a specific version of a resource. StatusCode = 304 means no changed
 	if res.StatusCode() == 304 {
-		return nil, errors.New("users no change")
+		return nil, errors.New(api.UserNotModified)
 	}
 	// update etag
-	if res.Header().Get("Etag") != "" && res.Header().Get("Etag") != c.eTag {
-		c.eTag = res.Header().Get("Etag")
+	if res.Header().Get("Etag") != "" && res.Header().Get("Etag") != c.eTags["users"] {
+		c.eTags["users"] = res.Header().Get("Etag")
 	}
 
 	usersResp, err := c.parseResponse(res, path, err)
@@ -211,6 +224,9 @@ func (c *APIClient) GetUserList() (UserList *[]api.UserInfo, err error) {
 	}
 	b, _ := usersResp.Get("users").Encode()
 	json.Unmarshal(b, &users)
+	if len(users) == 0 {
+		return nil, errors.New("users is null")
+	}
 
 	userList := make([]api.UserInfo, len(users))
 	for i := 0; i < len(users); i++ {
@@ -379,6 +395,7 @@ func (c *APIClient) parseV2rayNodeResponse(s *serverConfig) (*api.NodeInfo, erro
 		Path:              s.NetworkSettings.Path,
 		Host:              host,
 		EnableVless:       c.EnableVless,
+		VlessFlow:         c.VlessFlow,
 		ServiceName:       s.NetworkSettings.ServiceName,
 		Header:            header,
 		NameServerConfig:  s.parseDNSConfig(),

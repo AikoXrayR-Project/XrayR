@@ -3,6 +3,7 @@ package sspanel
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -32,12 +33,15 @@ type APIClient struct {
 	Key                 string
 	NodeType            string
 	EnableVless         bool
+	VlessFlow           string
 	SpeedLimit          float64
 	DeviceLimit         int
 	DisableCustomConfig bool
 	LocalRuleList       []api.DetectRule
 	LastReportOnline    map[int]int
 	access              sync.Mutex
+	version             string
+	eTags               map[string]string
 }
 
 // New creat a api instance
@@ -72,11 +76,13 @@ func New(apiConfig *api.Config) *APIClient {
 		APIHost:             apiConfig.APIHost,
 		NodeType:            apiConfig.NodeType,
 		EnableVless:         apiConfig.EnableVless,
+		VlessFlow:           apiConfig.VlessFlow,
 		SpeedLimit:          apiConfig.SpeedLimit,
 		DeviceLimit:         apiConfig.DeviceLimit,
 		LocalRuleList:       localRuleList,
 		DisableCustomConfig: apiConfig.DisableCustomConfig,
 		LastReportOnline:    make(map[int]int),
+		eTags:               make(map[string]string),
 	}
 }
 
@@ -152,8 +158,17 @@ func (c *APIClient) GetNodeInfo() (nodeInfo *api.NodeInfo, err error) {
 	path := fmt.Sprintf("/mod_mu/nodes/%d/info", c.NodeID)
 	res, err := c.client.R().
 		SetResult(&Response{}).
+		SetHeader("If-None-Match", c.eTags["node"]).
 		ForceContentType("application/json").
 		Get(path)
+	// Etag identifier for a specific version of a resource. StatusCode = 304 means no changed
+	if res.StatusCode() == 304 {
+		return nil, errors.New(api.NodeNotModified)
+	}
+
+	if res.Header().Get("ETag") != "" && res.Header().Get("ETag") != c.eTags["node"] {
+		c.eTags["node"] = res.Header().Get("ETag")
+	}
 
 	response, err := c.parseResponse(res, path, err)
 	if err != nil {
@@ -167,6 +182,7 @@ func (c *APIClient) GetNodeInfo() (nodeInfo *api.NodeInfo, err error) {
 	}
 
 	// New sspanel API
+	c.version = nodeInfoResponse.Version
 	disableCustomConfig := c.DisableCustomConfig
 	if nodeInfoResponse.Version != "" && !disableCustomConfig {
 		// Check if custom_config is empty
@@ -212,9 +228,18 @@ func (c *APIClient) GetUserList() (UserList *[]api.UserInfo, err error) {
 	path := "/mod_mu/users"
 	res, err := c.client.R().
 		SetQueryParam("node_id", strconv.Itoa(c.NodeID)).
+		SetHeader("If-None-Match", c.eTags["users"]).
 		SetResult(&Response{}).
 		ForceContentType("application/json").
 		Get(path)
+	// Etag identifier for a specific version of a resource. StatusCode = 304 means no changed
+	if res.StatusCode() == 304 {
+		return nil, errors.New(api.UserNotModified)
+	}
+
+	if res.Header().Get("ETag") != "" && res.Header().Get("ETag") != c.eTags["users"] {
+		c.eTags["users"] = res.Header().Get("ETag")
+	}
 
 	response, err := c.parseResponse(res, path, err)
 	if err != nil {
@@ -236,23 +261,25 @@ func (c *APIClient) GetUserList() (UserList *[]api.UserInfo, err error) {
 
 // ReportNodeStatus reports the node status to the sspanel
 func (c *APIClient) ReportNodeStatus(nodeStatus *api.NodeStatus) (err error) {
-	path := fmt.Sprintf("/mod_mu/nodes/%d/info", c.NodeID)
-	systemload := SystemLoad{
-		Uptime: strconv.FormatUint(nodeStatus.Uptime, 10),
-		Load:   fmt.Sprintf("%.2f %.2f %.2f", nodeStatus.CPU/100, nodeStatus.Mem/100, nodeStatus.Disk/100),
+	// Determine whether a status report is in need
+	if compareVersion(c.version, "2023.2") == -1 {
+		path := fmt.Sprintf("/mod_mu/nodes/%d/info", c.NodeID)
+		systemload := SystemLoad{
+			Uptime: strconv.FormatUint(nodeStatus.Uptime, 10),
+			Load:   fmt.Sprintf("%.2f %.2f %.2f", nodeStatus.CPU/100, nodeStatus.Mem/100, nodeStatus.Disk/100),
+		}
+
+		res, err := c.client.R().
+			SetBody(systemload).
+			SetResult(&Response{}).
+			ForceContentType("application/json").
+			Post(path)
+
+		_, err = c.parseResponse(res, path, err)
+		if err != nil {
+			return err
+		}
 	}
-
-	res, err := c.client.R().
-		SetBody(systemload).
-		SetResult(&Response{}).
-		ForceContentType("application/json").
-		Post(path)
-
-	_, err = c.parseResponse(res, path, err)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -322,8 +349,18 @@ func (c *APIClient) GetNodeRule() (*[]api.DetectRule, error) {
 	path := "/mod_mu/func/detect_rules"
 	res, err := c.client.R().
 		SetResult(&Response{}).
+		SetHeader("If-None-Match", c.eTags["rules"]).
 		ForceContentType("application/json").
 		Get(path)
+
+	// Etag identifier for a specific version of a resource. StatusCode = 304 means no changed
+	if res.StatusCode() == 304 {
+		return nil, errors.New(api.RuleNotModified)
+	}
+
+	if res.Header().Get("ETag") != "" && res.Header().Get("ETag") != c.eTags["rules"] {
+		c.eTags["rules"] = res.Header().Get("ETag")
+	}
 
 	response, err := c.parseResponse(res, path, err)
 	if err != nil {
@@ -422,7 +459,7 @@ func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *NodeInfoResponse) (
 			host = value
 		case "servicename":
 			serviceName = value
-		case "headertype":
+		case "headerType":
 			HeaderType = value
 		}
 	}
@@ -453,6 +490,7 @@ func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *NodeInfoResponse) (
 		Path:              path,
 		Host:              host,
 		EnableVless:       c.EnableVless,
+		VlessFlow:         c.VlessFlow,
 		ServiceName:       serviceName,
 		Header:            header,
 	}
@@ -786,10 +824,35 @@ func (c *APIClient) ParseSSPanelNodeInfo(nodeInfoResponse *NodeInfoResponse) (*a
 		Path:              nodeConfig.Path,
 		EnableTLS:         EnableTLS,
 		EnableVless:       EnableVless,
+		VlessFlow:         nodeConfig.Flow,
 		CypherMethod:      nodeConfig.MuEncryption,
 		ServiceName:       nodeConfig.Servicename,
 		Header:            nodeConfig.Header,
 	}
 
 	return nodeinfo, nil
+}
+
+func compareVersion(version1, version2 string) int {
+	n, m := len(version1), len(version2)
+	i, j := 0, 0
+	for i < n || j < m {
+		x := 0
+		for ; i < n && version1[i] != '.'; i++ {
+			x = x*10 + int(version1[i]-'0')
+		}
+		i++ // jump dot
+		y := 0
+		for ; j < m && version2[j] != '.'; j++ {
+			y = y*10 + int(version2[j]-'0')
+		}
+		j++ // jump dot
+		if x > y {
+			return 1
+		}
+		if x < y {
+			return -1
+		}
+	}
+	return 0
 }

@@ -182,10 +182,16 @@ func (c *Controller) nodeInfoMonitor() (err error) {
 	}
 
 	// First fetch Node Info
+	var nodeInfoChanged = true
 	newNodeInfo, err := c.apiClient.GetNodeInfo()
 	if err != nil {
-		log.Print(err)
-		return nil
+		if err.Error() == api.NodeNotModified {
+			nodeInfoChanged = false
+			newNodeInfo = c.nodeInfo
+		} else {
+			log.Print(err)
+			return nil
+		}
 	}
 	if newNodeInfo.Port == 0 {
 		return errors.New("server port must > 0")
@@ -195,7 +201,7 @@ func (c *Controller) nodeInfoMonitor() (err error) {
 	var usersChanged = true
 	newUserInfo, err := c.apiClient.GetUserList()
 	if err != nil {
-		if err.Error() == "users no change" {
+		if err.Error() == api.UserNotModified {
 			usersChanged = false
 			newUserInfo = c.userList
 		} else {
@@ -204,43 +210,48 @@ func (c *Controller) nodeInfoMonitor() (err error) {
 		}
 	}
 
-	var nodeInfoChanged = false
 	// If nodeInfo changed
-	if !reflect.DeepEqual(c.nodeInfo, newNodeInfo) {
-		// Remove old tag
-		oldTag := c.Tag
-		err := c.removeOldTag(oldTag)
-		if err != nil {
-			log.Print(err)
-			return nil
-		}
-		if c.nodeInfo.NodeType == "Shadowsocks-Plugin" {
-			err = c.removeOldTag(fmt.Sprintf("dokodemo-door_%s+1", c.Tag))
-		}
-		if err != nil {
-			log.Print(err)
-			return nil
-		}
-		// Add new tag
-		c.nodeInfo = newNodeInfo
-		c.Tag = c.buildNodeTag()
-		err = c.addNewTag(newNodeInfo)
-		if err != nil {
-			log.Print(err)
-			return nil
-		}
-		nodeInfoChanged = true
-		// Remove Old limiter
-		if err = c.DeleteInboundLimiter(oldTag); err != nil {
-			log.Print(err)
-			return nil
+	if nodeInfoChanged {
+		if !reflect.DeepEqual(c.nodeInfo, newNodeInfo) {
+			// Remove old tag
+			oldTag := c.Tag
+			err := c.removeOldTag(oldTag)
+			if err != nil {
+				log.Print(err)
+				return nil
+			}
+			if c.nodeInfo.NodeType == "Shadowsocks-Plugin" {
+				err = c.removeOldTag(fmt.Sprintf("dokodemo-door_%s+1", c.Tag))
+			}
+			if err != nil {
+				log.Print(err)
+				return nil
+			}
+			// Add new tag
+			c.nodeInfo = newNodeInfo
+			c.Tag = c.buildNodeTag()
+			err = c.addNewTag(newNodeInfo)
+			if err != nil {
+				log.Print(err)
+				return nil
+			}
+			nodeInfoChanged = true
+			// Remove Old limiter
+			if err = c.DeleteInboundLimiter(oldTag); err != nil {
+				log.Print(err)
+				return nil
+			}
+		} else {
+			nodeInfoChanged = false
 		}
 	}
 
 	// Check Rule
 	if !c.config.DisableGetRule {
 		if ruleList, err := c.apiClient.GetNodeRule(); err != nil {
-			log.Printf("Get rule list filed: %s", err)
+			if err.Error() != api.RuleNotModified {
+				log.Printf("Get rule list filed: %s", err)
+			}
 		} else if len(*ruleList) > 0 {
 			if err := c.UpdateRule(c.Tag, *ruleList); err != nil {
 				log.Print(err)
@@ -391,14 +402,7 @@ func (c *Controller) addNewUser(userInfo *[]api.UserInfo, nodeInfo *api.NodeInfo
 		if nodeInfo.EnableVless {
 			users = c.buildVlessUser(userInfo)
 		} else {
-			var alterID uint16 = 0
-			if c.panelType == "V2RaySocks" && len(*userInfo) > 0 {
-				// use latest userInfo
-				alterID = (*userInfo)[0].AlterID
-			} else {
-				alterID = nodeInfo.AlterID
-			}
-			users = c.buildVmessUser(userInfo, alterID)
+			users = c.buildVmessUser(userInfo)
 		}
 	case "Trojan":
 		users = c.buildTrojanUser(userInfo)
