@@ -1,4 +1,4 @@
-package V2board
+package v2board
 
 import (
 	"bufio"

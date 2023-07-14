@@ -1,10 +1,10 @@
-package V2board_test
+package v2board_test
 
 import (
 	"testing"
 
 	"github.com/AikoXrayR-Project/XrayR/api"
-	"github.com/AikoXrayR-Project/XrayR/api/V2board"
+	"github.com/AikoXrayR-Project/XrayR/api/v2board"
 )
 
 func CreateClient() api.API {
@@ -14,7 +14,7 @@ func CreateClient() api.API {
 		NodeID:   1,
 		NodeType: "V2ray",
 	}
-	client := V2board.New(apiConfig)
+	client := v2board.New(apiConfig)
 	return client
 }
 
@@ -34,7 +34,7 @@ func TestGetSSNodeInfo(t *testing.T) {
 		NodeID:   1,
 		NodeType: "Shadowsocks",
 	}
-	client := V2board.New(apiConfig)
+	client := v2board.New(apiConfig)
 	nodeInfo, err := client.GetNodeInfo()
 	if err != nil {
 		t.Error(err)
@@ -49,7 +49,7 @@ func TestGetTrojanNodeInfo(t *testing.T) {
 		NodeID:   1,
 		NodeType: "Trojan",
 	}
-	client := V2board.New(apiConfig)
+	client := v2board.New(apiConfig)
 	nodeInfo, err := client.GetNodeInfo()
 	if err != nil {
 		t.Error(err)

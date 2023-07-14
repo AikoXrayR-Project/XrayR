@@ -6,7 +6,6 @@ import (
 	"os"
 	"sync"
 
-	"github.com/AikoXrayR-Project/XrayR/api/V2board"
 	"github.com/AikoXrayR-Project/XrayR/app/mydispatcher"
 
 	"github.com/imdario/mergo"
@@ -21,6 +20,7 @@ import (
 	"github.com/AikoXrayR-Project/XrayR/api/pmpanel"
 	"github.com/AikoXrayR-Project/XrayR/api/proxypanel"
 	"github.com/AikoXrayR-Project/XrayR/api/sspanel"
+	"github.com/AikoXrayR-Project/XrayR/api/v2board"
 	"github.com/AikoXrayR-Project/XrayR/api/v2raysocks"
 	_ "github.com/AikoXrayR-Project/XrayR/main/distro/all"
 	"github.com/AikoXrayR-Project/XrayR/service"
@@ -177,7 +177,7 @@ func (p *Panel) Start() {
 		case "SSpanel":
 			apiClient = sspanel.New(nodeConfig.ApiConfig)
 		case "V2board":
-			apiClient = V2board.New(nodeConfig.ApiConfig)
+			apiClient = v2board.New(nodeConfig.ApiConfig)
 		case "PMpanel":
 			apiClient = pmpanel.New(nodeConfig.ApiConfig)
 		case "Proxypanel":
