@@ -600,14 +600,6 @@ func (c *Controller) userInfoMonitor() (err error) {
 	return nil
 }
 
-func (c *Controller) buildNodeTag() string {
-	return fmt.Sprintf("%s_%s_%d", c.nodeInfo.NodeType, c.config.ListenIP, c.nodeInfo.Port)
-}
-
-func (c *Controller) logPrefix() string {
-	return fmt.Sprintf("[%s] %s(ID=%d)", c.clientInfo.APIHost, c.nodeInfo.NodeType, c.nodeInfo.NodeID)
-}
-
 // Check Cert
 func (c *Controller) certMonitor() error {
 	if c.nodeInfo.EnableTLS && c.config.EnableREALITY == false {
@@ -625,4 +617,12 @@ func (c *Controller) certMonitor() error {
 		}
 	}
 	return nil
+}
+
+func (c *Controller) buildNodeTag() string {
+	return fmt.Sprintf("%s_%s_%d", c.nodeInfo.NodeType, c.config.ListenIP, c.nodeInfo.Port)
+}
+
+func (c *Controller) logPrefix() string {
+	return fmt.Sprintf("[%s: %d]", c.nodeInfo.NodeType, c.nodeInfo.NodeID)
 }
