@@ -402,7 +402,14 @@ func (c *Controller) addNewUser(userInfo *[]api.UserInfo, nodeInfo *api.NodeInfo
 		if nodeInfo.EnableVless {
 			users = c.buildVlessUser(userInfo)
 		} else {
-			users = c.buildVmessUser(userInfo)
+			var alterID uint16 = 0
+			if (c.panelType == "V2board" || c.panelType == "V2RaySocks") && len(*userInfo) > 0 {
+				// use latest userInfo
+				alterID = (*userInfo)[0].AlterID
+			} else {
+				alterID = nodeInfo.AlterID
+			}
+			users = c.buildVmessUser(userInfo, alterID)
 		}
 	case "Trojan":
 		users = c.buildTrojanUser(userInfo)

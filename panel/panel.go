@@ -20,6 +20,7 @@ import (
 	"github.com/AikoXrayR-Project/XrayR/api/pmpanel"
 	"github.com/AikoXrayR-Project/XrayR/api/proxypanel"
 	"github.com/AikoXrayR-Project/XrayR/api/sspanel"
+	"github.com/AikoXrayR-Project/XrayR/api/v2b"
 	"github.com/AikoXrayR-Project/XrayR/api/v2board"
 	"github.com/AikoXrayR-Project/XrayR/api/v2raysocks"
 	_ "github.com/AikoXrayR-Project/XrayR/main/distro/all"
@@ -174,6 +175,9 @@ func (p *Panel) Start() {
 	for _, nodeConfig := range p.panelConfig.NodesConfig {
 		var apiClient api.API
 		switch nodeConfig.PanelType {
+		case "V2b":
+			// Add Old API V2board
+			apiClient = v2b.New(nodeConfig.ApiConfig)
 		case "SSpanel":
 			apiClient = sspanel.New(nodeConfig.ApiConfig)
 		case "V2board":
