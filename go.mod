@@ -5,9 +5,9 @@ go 1.20
 require (
 	github.com/bitly/go-simplejson v0.5.1
 	github.com/deckarep/golang-set v1.8.0
-	github.com/eko/gocache/lib/v4 v4.1.3
+	github.com/eko/gocache/lib/v4 v4.1.5
 	github.com/eko/gocache/store/go_cache/v4 v4.1.2
-	github.com/eko/gocache/store/redis/v4 v4.1.2
+	github.com/eko/gocache/store/redis/v4 v4.2.1
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/go-acme/lego/v4 v4.12.3
 	github.com/go-redis/redis/v8 v8.11.5
@@ -139,6 +139,7 @@ require (
 	github.com/quic-go/qtls-go1-19 v0.3.2 // indirect
 	github.com/quic-go/qtls-go1-20 v0.2.2 // indirect
 	github.com/quic-go/quic-go v0.35.1 // indirect
+	github.com/redis/go-redis/v9 v9.0.2 // indirect
 	github.com/refraction-networking/utls v1.3.2 // indirect
 	github.com/riobard/go-bloom v0.0.0-20200614022211-cdc8013cb5b3 // indirect
 	github.com/sacloud/api-client-go v0.2.1 // indirect
@@ -169,6 +170,8 @@ require (
 	github.com/v2fly/ss-bloomring v0.0.0-20210312155135-28617310f63e // indirect
 	github.com/vinyldns/go-vinyldns v0.9.16 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
+	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
+	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/vultr/govultr/v2 v2.17.2 // indirect
 	github.com/xtls/reality v0.0.0-20230613075828-e07c3b04b983 // indirect
 	github.com/yandex-cloud/go-genproto v0.0.0-20220805142335-27b56ddae16f // indirect
