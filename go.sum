@@ -678,8 +678,8 @@ github.com/sacloud/iaas-api-go v1.3.2 h1:03obrdVdv/bGHK9p6CV7Uzg+ot2gLsddUMevm9D
 github.com/sacloud/iaas-api-go v1.3.2/go.mod h1:CoqpRYBG2NRB5xfqTfZNyh2lVLKyLkE/HV9ISqmbhGc=
 github.com/sacloud/packages-go v0.0.5 h1:NXTQNyyp/3ugM4CANtLBJLejFESzfWu4GPUURN4NJrA=
 github.com/sacloud/packages-go v0.0.5/go.mod h1:XWMBSNHT9YKY3lCh6yJsx1o1RRQQGpuhNqJA6bSHdD4=
-github.com/sagernet/sing v0.2.9 h1:3wsTz+JG5Wzy65eZnh6AuCrD2QqcRF6Iq6f7ttmJsAo=
-github.com/sagernet/sing v0.2.9/go.mod h1:Ta8nHnDLAwqySzKhGoKk4ZIB+vJ3GTKj7UPrWYvM+4w=
+github.com/sagernet/sing v0.2.13 h1:ohczGKWP+Yn3zlQXSvFn+6EKSELGggBi66D5rqpYRQ0=
+github.com/sagernet/sing v0.2.13/go.mod h1:AhNEHu0GXrpqkuzvTwvC8+j2cQUU/dh+zLEmq4C99pg=
 github.com/sagernet/sing-shadowsocks v0.2.4 h1:s/CqXlvFAZhlIoHWUwPw5CoNnQ9Ibki9pckjuugtVfY=
 github.com/sagernet/sing-shadowsocks v0.2.4/go.mod h1:80fNKP0wnqlu85GZXV1H1vDPC/2t+dQbFggOw4XuFUM=
 github.com/sagernet/wireguard-go v0.0.0-20221116151939-c99467f53f2c h1:vK2wyt9aWYHHvNLWniwijBu/n4pySypiKRhN32u/JGo=
@@ -1076,8 +1076,8 @@ golang.org/x/sys v0.0.0-20220908164124-27713097b956/go.mod h1:oPkhp1MJrh7nUepCBc
 golang.org/x/sys v0.2.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.5.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.9.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
-golang.org/x/sys v0.10.0 h1:SqMFp9UcQJZa+pmYuAKjd9xq1f0j5rLcDIk0mj4qAsA=
-golang.org/x/sys v0.10.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.13.0 h1:Af8nKPmuFypiUBjVoU9V20FiaFXOcuZI21p0ycVYYGE=
+golang.org/x/sys v0.13.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/term v0.0.0-20201117132131-f5c789dd3221/go.mod h1:Nr5EML6q2oocZ2LXRh80K7BxOlk5/8JxuGnuhpl+muw=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/term v0.0.0-20210927222741-03fcf44c2211/go.mod h1:jbD1KX2456YbFQfuXm/mYQcufACuNUgVhRMnK/tPxf8=
